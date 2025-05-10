@@ -40,6 +40,7 @@ class SocketW
             }
             return 0;
         }
+        
 
         int bindsck(const char *ip, int port){
             serverAddr.sin_family = AF_INET;
@@ -50,12 +51,73 @@ class SocketW
                 fprintf(stderr, "bind() failed with error %d\n", WSAGetLastError());
                 return -1;
             }
-            return 0; // 修复：返回 0 表示成功
+            return 0; 
         }
 
-        bool listensck(int backlog);
+        int listensck(int backlog){
+            if (listen(sock, backlog) == SOCKET_ERROR) {
+                fprintf(stderr, "listen() failed with error %d\n", WSAGetLastError());
+                return -1;
+            }
+            return 0 ;
+        }//sets the socket to listen for incoming connections.
 
+        int acceptsck(SOCKET *clientSocket){
+            struct sockaddr_in clientAddr;
+            int addrLen = sizeof(clientAddr);
+            SOCKET clientSock = accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
+            if (*clientSocket == INVALID_SOCKET) {
+                fprintf(stderr, "accept() failed with error %d\n", WSAGetLastError());
+                return -1;
+            } 
+        }//accepts a connection from a client and returns the client socket descriptor.
 
+        int connectToServer(const char* serverName, unsigned short port) {
+        struct hostent* hp;
+        if (isalpha(serverName[0])) {
+            hp = gethostbyname(serverName);
+        } else {
+            unsigned int addr = inet_addr(serverName);
+            hp = gethostbyaddr((char*)&addr, 4, AF_INET);
+        }
 
+        if (hp == NULL) {
+            fprintf(stderr, "Cannot resolve address: %d\n", WSAGetLastError());
+            return -1;
+        }
+
+        memset(&serverAddr, 0, sizeof(serverAddr));
+        memcpy(&(serverAddr.sin_addr), hp->h_addr, hp->h_length);
+        serverAddr.sin_family = hp->h_addrtype;
+        serverAddr.sin_port = htons(port);
+
+        if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+            fprintf(stderr, "connect() failed with error %d\n", WSAGetLastError());
+            return -1;
+        }
+        return 0;
+    }
+
+    int sendsck(const char* buffer, int length){
+        int bytesSent = send(sock, buffer, length, 0);
+        if (bytesSent == SOCKET_ERROR) {
+            fprintf(stderr, "send() failed with error %d\n", WSAGetLastError());
+            return -1;
+        }
+        return bytesSent;
+    }
+
+    int recvsck(char* buffer, int length){
+        int bytesRecv = recv(sock, buffer, length, 0);
+        if (bytesRecv == SOCKET_ERROR) {
+            fprintf(stderr, "recv() failed with error %d\n", WSAGetLastError());
+            return -1;      
+        } else if (bytesRecv>0) {
+            buffer[bytesRecv] = '\0'; // Null-terminate the received string
+        } else if (bytesRecv == 0) {
+            printf("Connection \n");
+        }
+        return bytesRecv; 
+    }
 };
 #endif
