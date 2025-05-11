@@ -8,6 +8,7 @@
 
 #include "Crypto.h"
 #include "SocketW.h"
+#include "SecConn.h"
 
 using std::cout;
 using std::cin;
@@ -15,20 +16,38 @@ using std::endl;
 using std::string;
 
 using WinSock::SocketW;
+using WinSock::SocketWStatus;
 
 int main()
 {
     SocketW client = SocketW();
-    client.init();
-    client.connect("127.0.0.1", 11451);
+    if (client.init() != SocketWStatus::SW_OK) {
+        printf("Failed to initialize WinSock\n");
+        return -1;
+    }
+    if (client.connect("127.0.0.1", 11451) != SocketWStatus::SW_OK) {
+        printf("Failed to connect to server.\n");
+        return -1;
+    }
+
+    SecConn conn(client);
+
+    conn.handshake();
 
     while (true) {
         printf("Your Message: ");
         string data;
         cin >> data;
-        uint16_t len = data.length();
-        client.send((char*)(&len), 2);
-        client.send(data.c_str(), len);
+        
+        vector<uint8_t> buffer;
+        for (int i = 0; i < data.size(); i++) {
+            buffer.push_back(data.data()[i]);
+        }
+
+        if (conn.send_packet(buffer) != SecConnStatus::SECONN_OK) {
+            printf("Failed to send packet\n");
+            return -1;
+        }
     }
     return 0;
 }

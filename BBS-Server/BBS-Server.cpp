@@ -14,10 +14,13 @@ using std::string;
 using std::thread;
 
 using WinSock::SocketW;
+using WinSock::SocketWStatus;
 
 int main(int argc, char** argv)
 {
-	// TODO: Place chatroon initializations here
+	// TODO: Place chatroom initializations here
+	
+	
 	// Create listener
 	SocketW listener = SocketW();
 	listener.init();
@@ -35,12 +38,12 @@ int main(int argc, char** argv)
 
 	// Bind and listen
 	printf("Using bind address %s:%hu\n", bindAddress.c_str(), port);
-	if (listener.bind(bindAddress.c_str(), 11451) != 0) {
+	if (listener.bind(bindAddress.c_str(), 11451) != SocketWStatus::SW_OK) {
 		printf("Failed to bind socket to address.\n");
 		return 1;
 	}
 
-	if (listener.listen(SOMAXCONN) != 0) {
+	if (listener.listen(SOMAXCONN) != SocketWStatus::SW_OK) {
 		printf("Failed to start listening.\n");
 		return 2;
 	}
