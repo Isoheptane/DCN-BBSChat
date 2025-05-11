@@ -38,7 +38,7 @@ void connectionHandler(SocketW sockw) {
 	SecConn conn(sockw);
 	
 	// Key exchange handshake
-	conn.handshake();
+	conn.server_handshake();
 
 	while (conn.connected()) {
 		vector<uint8_t> packet;

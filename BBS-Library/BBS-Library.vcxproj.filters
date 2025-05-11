@@ -50,5 +50,11 @@
     <ClCompile Include="Crypto_AES.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Crypto_SHA256.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Crypto_Random.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
