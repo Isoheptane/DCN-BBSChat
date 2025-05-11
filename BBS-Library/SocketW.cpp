@@ -1,11 +1,5 @@
 #include "pch.h"
 
-/*
-    I know this is not good, but anyway, this 
-    can still be used since we wrapped it in 
-    our SocketW class.
-*/
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "SocketW.h"
 
 #include <cstdio>
