@@ -87,15 +87,19 @@ namespace WinSock {
         return 0;
     }
 
-    int SocketW::accept(SOCKET* clientSock) {
+    int SocketW::accept(SocketW* sockW) {
         struct sockaddr_in clientAddr;
         int addrLen = sizeof(clientAddr);
 
-        *clientSock = ::accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
-        if (*clientSock == INVALID_SOCKET) {
+        *sockW = SocketW();
+
+        sockW->sock = ::accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
+        if (sockW->sock == INVALID_SOCKET) {
             fprintf(stderr, "accept() failed with error %d\n", WSAGetLastError());
             return -1;
         }
+        sockW->peerAddr = clientAddr;
+
         return 0;
     }
 
