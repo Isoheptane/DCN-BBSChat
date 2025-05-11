@@ -55,9 +55,20 @@ namespace WinSock {
     }
 
     int SocketW::bind(const char* ip, int port) {
+
+        struct hostent* hp;
+        unsigned int addr = inet_addr(ip);
+        hp = gethostbyaddr((char*)&addr, 4, AF_INET);
+
+        if (hp == NULL) {
+            fprintf(stderr, "Cannot resolve bind address: %d\n", WSAGetLastError());
+            return SocketWStatus::SW_RESOLV_ERR;
+        }
+
         sockAddr.sin_family = AF_INET;
         sockAddr.sin_port = htons(port);
-        sockAddr.sin_addr.s_addr = INADDR_ANY;
+        memcpy(&(sockAddr.sin_addr), hp->h_addr, hp->h_length);
+
         
         if (::bind(this->sock, (struct sockaddr*)&sockAddr, sizeof(sockAddr)) == SOCKET_ERROR) {
             fprintf(stderr, "bind() failed with error %d\n", WSAGetLastError());
