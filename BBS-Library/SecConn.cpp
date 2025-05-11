@@ -4,6 +4,7 @@
 #include "Crypto.h"
 
 using Crypto::AES::AES;
+using Crypto::SHA256::SHA256;
 
 SecConn::SecConn(SocketW socket) {
 	this->socket = socket;
@@ -42,7 +43,7 @@ int SecConn::ecdh_handshake() {
 	Crypto::ECDH::ecdh_shared_secret(prikey, other_pubkey, secret);
 
 	// hash secret to AES key
-	Crypto::SHA256::SHA256 sha;
+	SHA256 sha;
 	sha.update(secret, sizeof(secret));
 	auto digest = sha.digest();
 	memcpy(this->aes_key, digest.data(), sizeof(aes_key));
@@ -131,7 +132,13 @@ int SecConn::receive_packet(vector<uint8_t>& packet) {
 	for (int i = 0; i < 32; i++) {
 		buffer[i] = buffer[i] ^ new_cipher_byte();
 	}
-	// TODO: Add SHA256 check here
+	// SHA256 check
+	SHA256 sha;
+	sha.update(packet.data(), packet.size());
+	auto digest = sha.digest();
+	if (memcmp(digest.data(), buffer, 32) != 0) {
+		return SecConnStatus::SECONN_INVALID_MESSAGE;
+	}
 	
 	return SecConnStatus::SECONN_OK;
 }
@@ -141,6 +148,13 @@ int SecConn::send_packet(vector<uint8_t> packet) {
 	if (length >= 65536) {
 		return SecConnStatus::SECONN_INVALID_LENGTH;
 	}
+	// Calculate SHA256
+	uint8_t sha256[32];
+
+	SHA256 sha;
+	sha.update(packet.data(), packet.size());
+	auto digest = sha.digest();
+	memcpy(sha256, digest.data(), sizeof(sha256));
 	// Add header
 	int counter = 0;
 	buffer[counter++] = (length >> 8 & 0xFF) ^ new_cipher_byte();
@@ -150,8 +164,6 @@ int SecConn::send_packet(vector<uint8_t> packet) {
 		buffer[counter++] = packet[i] ^ new_cipher_byte();
 	}
 	// TODO: Add SHA256 check here
-	uint8_t sha256[32];
-	memset(sha256, 0, sizeof(sha256));
 	for (int i = 0; i < 32; i++) {
 		buffer[counter++] = sha256[i] ^ new_cipher_byte();
 	}
