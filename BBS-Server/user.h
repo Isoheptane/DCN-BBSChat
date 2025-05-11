@@ -19,7 +19,7 @@ public:
 	string password;
 	// Message to be sent
 	std::map<string, std::deque<Message>> dm_pending;
-	// Pending mutex
+	// DM Pending mutex
 	std::mutex dm_pending_mutex;
 
 	User(string name, string password);
