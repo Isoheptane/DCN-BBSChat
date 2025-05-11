@@ -3,8 +3,11 @@
 
 #include "Crypto.h"
 
+using WinSock::SocketW;
 using Crypto::AES::AES;
 using Crypto::SHA256::SHA256;
+
+using std::vector;
 
 SecConn::SecConn(SocketW socket) {
 	this->socket = socket;
@@ -176,4 +179,8 @@ int SecConn::send_packet(vector<uint8_t> packet) {
 
 bool SecConn::connected() {
 	return this->socket.isConnected();
+}
+
+void SecConn::disconnect() {
+	this->socket.close();
 }

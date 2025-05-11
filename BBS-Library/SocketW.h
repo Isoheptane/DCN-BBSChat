@@ -5,6 +5,8 @@
 #include <ws2tcpip.h>
 
 #include <cstdint>
+#include <string>
+
 
 namespace WinSock {
 
@@ -50,4 +52,7 @@ namespace WinSock {
         const sockaddr_in* getSockAddr();
         const sockaddr_in* getPeerAddr();
     };
+
+    std::string getAddressString(const sockaddr_in* addr);
+    uint16_t getAddressPort(const sockaddr_in* addr);
 }

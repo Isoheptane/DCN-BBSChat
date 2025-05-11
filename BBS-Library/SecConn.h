@@ -6,11 +6,6 @@
 #include <cstdint>
 #include <vector>
 
-using WinSock::SocketW;
-using Crypto::AES::AES;
-
-using std::vector;
-
 enum SecConnStatus {
 	SECONN_OK = 0,
 	SECONN_SOCK_ERR = -1,
@@ -21,12 +16,13 @@ enum SecConnStatus {
 
 class SecConn
 {
+
 private:
-	SocketW socket;
+	WinSock::SocketW socket;
 
 	uint8_t* buffer;
 
-	AES aes;
+	Crypto::AES::AES aes;
 	uint8_t aes_key[32];
 	uint8_t aes_roundkey[4 * 4 * 15];
 	uint8_t aes_vector[16];
@@ -36,12 +32,13 @@ private:
 	uint8_t new_cipher_byte();
 	int ecdh_handshake();
 public:
-	SecConn(SocketW socket);
+	SecConn(WinSock::SocketW socket);
 	~SecConn();
 	int server_handshake();
 	int client_handshake();
-	int receive_packet(vector<uint8_t>& packet);
-	int send_packet(vector<uint8_t> packet);
+	int receive_packet(std::vector<uint8_t>& packet);
+	int send_packet(std::vector<uint8_t> packet);
 	bool connected();
+	void disconnect();
 };
 
