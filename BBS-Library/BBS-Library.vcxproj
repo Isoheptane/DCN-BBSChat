@@ -140,13 +140,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Crypto.h" />
+    <ClInclude Include="Crypto_ECDH.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SecConn.h" />
     <ClInclude Include="SocketW.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Crypto.cpp" />
+    <ClCompile Include="Crypto_AES.cpp" />
+    <ClCompile Include="Crypto_ECDH.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
