@@ -20,7 +20,8 @@ class SecConn
 {
 private:
 	SocketW socket;
-	uint8_t aes_key[16];
+	uint8_t aes_key[32];
+	uint8_t aes_vector[16];
 	uint8_t cipher_block[16];
 	int cipher_counter;
 
@@ -29,6 +30,7 @@ private:
 	uint8_t new_cipher_byte();
 public:
 	SecConn(SocketW socket);
+	~SecConn();
 	int handshake();
 	int receive_packet(vector<uint8_t>& packet);
 	int send_packet(vector<uint8_t> packet);

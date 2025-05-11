@@ -5,22 +5,38 @@
 
 SecConn::SecConn(SocketW socket) {
 	this->socket = socket;
+	this->cipher_counter = 0;
 	memset(this->aes_key, 0, sizeof(this->aes_key));
+	memset(this->aes_vector, 0, sizeof(this->aes_vector));
 	memset(this->cipher_block, 0, sizeof(this->cipher_block));
 	this->buffer = (uint8_t*)malloc(131072);
 }
 
-
+SecConn::~SecConn() {
+	free(this->buffer);
+}
 
 int SecConn::handshake() {
-	// Initialize handshake here
+	// Initialize handshake heres
 	this->cipher_counter = 0;
 	return 0;
 }
 
 uint8_t SecConn::new_cipher_byte() {
 	if (this->cipher_counter >= sizeof(this->cipher_block)) {
+		// Increment aes_vector (counter) in CTR mode
+		for (int i = 0; i < sizeof(aes_vector); i++) {
+			if (aes_vector[i] != 255) {
+				aes_vector[i]++;
+				break;
+			}
+			else {
+				aes_vector[i] = 0;
+			}
+		}
 		// TODO: Generate a new cipher block
+
+		// Reset cipher_counter
 		cipher_counter = 0;
 	}
 	return this->cipher_block[this->cipher_counter++];
