@@ -18,12 +18,12 @@ namespace WinSock {
     {
     private:
         SOCKET sock;
+        bool connected;
         sockaddr_in sockAddr;
         sockaddr_in peerAddr;
 
     public:
         SocketW();
-        SocketW(SOCKET socket);
         ~SocketW();
 
         int init();
@@ -35,5 +35,9 @@ namespace WinSock {
         int recv(char* buffer, int length);
         int sendAll(const char* buffer, int length);
         int recvAll(char* buffer, int length);
+        void close();
+        bool isConnected();
+        const sockaddr_in* getSockAddr();
+        const sockaddr_in* getPeerAddr();
     };
 }

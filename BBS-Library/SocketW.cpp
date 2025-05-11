@@ -35,22 +35,13 @@ namespace WinSock {
         }
     }
 
-    SocketW::SocketW() : sock(INVALID_SOCKET) {
-        memset(&sockAddr, 0, sizeof(sockAddr));
-        memset(&peerAddr, 0, sizeof(peerAddr));
-    }
-
-    SocketW::SocketW(SOCKET socket) : sock(socket) {
+    SocketW::SocketW() : sock(INVALID_SOCKET), connected(false) {
         memset(&sockAddr, 0, sizeof(sockAddr));
         memset(&peerAddr, 0, sizeof(peerAddr));
     }
 
     SocketW::~SocketW() {
-        // only clean up the socket if it was created
-        if (sock != INVALID_SOCKET) {
-            closesocket(sock);
-            sock = INVALID_SOCKET;
-        }
+
     }
 
     int SocketW::init() {
@@ -98,6 +89,7 @@ namespace WinSock {
             fprintf(stderr, "accept() failed with error %d\n", WSAGetLastError());
             return -1;
         }
+        sockW->connected = true;
         sockW->peerAddr = clientAddr;
 
         return 0;
@@ -127,6 +119,7 @@ namespace WinSock {
             fprintf(stderr, "connect() failed with error %d\n", WSAGetLastError());
             return -1;
         }
+        connected = true;
         return 0;
     }
 
@@ -134,7 +127,11 @@ namespace WinSock {
         int bytesSent = ::send(sock, buffer, length, 0);
         if (bytesSent == SOCKET_ERROR) {
             fprintf(stderr, "send() failed with error %d\n", WSAGetLastError());
+            connected = false;
             return -1;
+        }
+        else if (bytesSent == 0) {
+            connected = false;
         }
         return bytesSent;
     }
@@ -143,33 +140,63 @@ namespace WinSock {
         int bytesRecv = ::recv(sock, buffer, length, 0);
         if (bytesRecv == SOCKET_ERROR) {
             fprintf(stderr, "recv() failed with error %d\n", WSAGetLastError());
+            connected = false;
             return -1;
+        }
+        else if (bytesRecv == 0) {
+            connected = false;
         }
         return bytesRecv;
     }
 
     int SocketW::sendAll(const char* buffer, int length) {
-        while (length > 0) {
-            int sentSize = this->send(buffer, length);
+        int sent = 0;
+        while (sent < length) {
+            int sentSize = this->send(buffer, length - sent);
             if (sentSize == SOCKET_ERROR) {
                 return -1;
             }
-            length -= sentSize;
+            else if (sentSize == 0) {
+                break;
+            }
+            sent += sentSize;
             buffer += sentSize;
         }
-        return 0;
+        return sent;
     }
 
     int SocketW::recvAll(char* buffer, int length) {
-        while (length > 0) {
-            int recvSize = this->recv(buffer, length);
+        int received = 0;
+        while (received < length) {
+            int recvSize = this->recv(buffer, length - received);
             if (recvSize == SOCKET_ERROR) {
                 return -1;
             }
-            length -= recvSize;
+            else if (received == 0) {
+                break;
+            }
+            received += recvSize;
             buffer += recvSize;
         }
         return 0;
     }
 
+    void SocketW::close() {
+        if (sock != INVALID_SOCKET) {
+            closesocket(sock);
+            sock = INVALID_SOCKET;
+        }
+    }
+
+    bool SocketW::isConnected() {
+        return this->connected;
+    }
+
+    const sockaddr_in* SocketW::getSockAddr() {
+        return &this->sockAddr;
+    }
+
+    const sockaddr_in* SocketW::getPeerAddr() {
+        return &this->peerAddr;
+    }
 }
