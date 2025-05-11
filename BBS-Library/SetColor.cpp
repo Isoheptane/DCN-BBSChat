@@ -1,7 +1,8 @@
 #pragma once
 #include "pch.h"
-
+#include "SetColor.h"
 #include <windows.h>
+
 
 
 namespace SetColor {
