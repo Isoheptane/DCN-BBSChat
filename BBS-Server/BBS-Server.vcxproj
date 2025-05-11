@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f72a019f-0304-4688-b708-02108a66eb1b}</ProjectGuid>
-    <RootNamespace>BBSClient</RootNamespace>
+    <ProjectGuid>{d078d2ae-9362-46ef-b41e-2b55f0dc5013}</ProjectGuid>
+    <RootNamespace>BBSServer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -131,7 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BBS-Client.cpp" />
+    <ClCompile Include="BBS-Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BBS-Library\BBS-Library.vcxproj">
