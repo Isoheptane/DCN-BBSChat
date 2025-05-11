@@ -15,7 +15,7 @@ namespace WinSock {
     WSAData g_wsaData;
     bool g_wsaInitialized = false;
 
-
+    /// Initialize WSA, this will be automatically called if necessary
     bool InitializeWSA() {
         if (!g_wsaInitialized) {
             if (WSAStartup(MAKEWORD(2, 2), &g_wsaData) != 0) {
@@ -26,7 +26,8 @@ namespace WinSock {
         }
         return true;
     }
-
+    
+    /// Deinitialize WSA
     void CleanupWSA() {
         if (g_wsaInitialized) {
             WSACleanup();
@@ -86,17 +87,15 @@ namespace WinSock {
         return 0;
     }
 
-    int SocketW::accept(SocketW* sockw) {
+    int SocketW::accept(SOCKET* clientSock) {
         struct sockaddr_in clientAddr;
         int addrLen = sizeof(clientAddr);
 
-        SOCKET newSock = ::accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
-        if (newSock == INVALID_SOCKET) {
+        *clientSock = ::accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
+        if (*clientSock == INVALID_SOCKET) {
             fprintf(stderr, "accept() failed with error %d\n", WSAGetLastError());
             return -1;
         }
-        *sockw = SocketW(newSock);
-        sockw->peerAddr = clientAddr;
         return 0;
     }
 
@@ -142,13 +141,31 @@ namespace WinSock {
             fprintf(stderr, "recv() failed with error %d\n", WSAGetLastError());
             return -1;
         }
-        else if (bytesRecv > 0) {
-            buffer[bytesRecv] = '\0'; // Null-terminate the received string
-        }
-        else if (bytesRecv == 0) {
-            printf("Connection closed\n");
-        }
         return bytesRecv;
+    }
+
+    int SocketW::sendAll(const char* buffer, int length) {
+        while (length > 0) {
+            int sentSize = this->send(buffer, length);
+            if (sentSize == SOCKET_ERROR) {
+                return -1;
+            }
+            length -= sentSize;
+            buffer += sentSize;
+        }
+        return 0;
+    }
+
+    int SocketW::recvAll(char* buffer, int length) {
+        while (length > 0) {
+            int recvSize = this->recv(buffer, length);
+            if (recvSize == SOCKET_ERROR) {
+                return -1;
+            }
+            length -= recvSize;
+            buffer += recvSize;
+        }
+        return 0;
     }
 
 }
