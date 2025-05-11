@@ -57,7 +57,7 @@ int SecConn::receive_packet(vector<uint8_t>& packet) {
 }
 
 int SecConn::send_packet(vector<uint8_t> packet) {
-	int length = packet.size();
+	size_t length = packet.size();
 	if (length >= 65536) {
 		return SecConnStatus::SECONN_INVALID_LENGTH;
 	}

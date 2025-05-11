@@ -133,6 +133,8 @@
   <ItemGroup>
     <ClCompile Include="BBS-Server.cpp" />
     <ClCompile Include="listener.cpp" />
+    <ClCompile Include="message.cpp" />
+    <ClCompile Include="user.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BBS-Library\BBS-Library.vcxproj">
@@ -141,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="listener.h" />
+    <ClInclude Include="message.h" />
+    <ClInclude Include="user.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,4 +6,4 @@ using WinSock::SocketW;
 
 void startListener(SocketW listener);
 
-void connectionHandler(SocketW conn);
+void connectionHandler(SocketW sockw);

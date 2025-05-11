@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 	// Bind and listen
 	printf("Using bind address %s:%hu\n", bindAddress.c_str(), port);
-	if (listener.bind(bindAddress.c_str(), 11451) != SocketWStatus::SW_OK) {
+	if (listener.bind(bindAddress.c_str(), port) != SocketWStatus::SW_OK) {
 		printf("Failed to bind socket to address.\n");
 		return 1;
 	}
