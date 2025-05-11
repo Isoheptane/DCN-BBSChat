@@ -32,7 +32,7 @@ int main()
 
     SecConn conn(client);
 
-    conn.handshake();
+    conn.client_handshake();
 
     while (true) {
         printf("Your Message: ");

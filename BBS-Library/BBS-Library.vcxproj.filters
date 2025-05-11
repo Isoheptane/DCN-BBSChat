@@ -30,18 +30,30 @@
     <ClInclude Include="SecConn.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Crypto_ECDH.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Crypto.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SocketW.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SecConn.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Crypto_ECDH.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Crypto_AES.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Crypto_SHA256.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Crypto_Random.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
