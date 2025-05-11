@@ -4,7 +4,17 @@
 #pragma comment(lib, "ws2_32.lib")
 #include <ws2tcpip.h>
 
+#include <cstdint>
+
 namespace WinSock {
+
+    enum SocketWStatus {
+        SW_OK = 0,
+        SW_ERR = -1,
+        SW_RESOLV_ERR = -2,
+        SW_WSA_ERR = -3,
+    };
+
     // global WSAData
     extern WSAData g_wsaData;
     extern bool g_wsaInitialized;
@@ -31,10 +41,10 @@ namespace WinSock {
         int listen(int backlog);
         int accept(SocketW* sockW);
         int connect(const char* serverName, unsigned short port);
-        int send(const char* buffer, int length);
-        int recv(char* buffer, int length);
-        int sendAll(const char* buffer, int length);
-        int recvAll(char* buffer, int length);
+        int send(const uint8_t* buffer, int length);
+        int recv(uint8_t* buffer, int length);
+        int sendAll(const uint8_t* buffer, int length);
+        int recvAll(uint8_t* buffer, int length);
         void close();
         bool isConnected();
         const sockaddr_in* getSockAddr();
