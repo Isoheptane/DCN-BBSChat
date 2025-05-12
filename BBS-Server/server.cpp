@@ -32,6 +32,7 @@ std::shared_ptr<User> Server::get_user(std::string username) {
 void Server::new_group(std::string name) {
 	std::lock_guard<std::recursive_mutex> guard(this->groups_mutex);
 	auto group = std::make_shared<Group>(name);
+	this->groups[name] = group;
 }
 
 bool Server::exist_group(std::string name) {
@@ -92,3 +93,25 @@ void Server::remove_session(std::string session_id) {
 	this->sessions.erase(session_id);
 }
 
+UserList Server::get_userlist() {
+	UserList list;
+	std::lock_guard<std::recursive_mutex> guard(this->sessions_mutex);
+	for (auto it : this->sessions) {
+		list.usernames.insert(it.second.get()->user);
+	}
+	return list;
+}
+
+void Server::remove_from_group(std::shared_ptr<Session> session) {
+	if (!session.get()->state == STATE_GROUP) {
+		return;
+	}
+	string group = session.get()->associated_data;
+
+	if (!this->exist_group(group))
+		return;
+	auto g = this->get_group(group);
+	g.get()->remove_user(session);
+	g.get()->broadcast(ServerMessage::leaveMessage(session.get()->user));
+
+}

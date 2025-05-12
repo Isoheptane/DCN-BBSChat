@@ -100,6 +100,9 @@ void connectionHandler(SocketW sockw) {
 		}
 	}
 
+	// Remove grom group if connection is closed
+	global_server.remove_from_group(session);
+
 	global_server.remove_session(session.get()->session_id);
 
 	printf("[%s:%d] Client disconnected.\n", epAddr.c_str(), epPort);

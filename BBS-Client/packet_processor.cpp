@@ -34,9 +34,9 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 	ServerMessage message = ServerMessage::fromPacket(packet);
 	if (message.type == "text") {
 		setColor(genColor(message.sender));
-		printf("%s", message.sender.c_str());
+		printf(" %s", message.sender.c_str());
 		setColor(Color::WHITE);
-		printf(" > %s\n", message.content.c_str());
+		printf(": %s\n", message.content.c_str());
 	}
 	if (message.type == "file_hint") {
 		setColor(genColor(message.sender));
@@ -45,26 +45,29 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 		printf(" uploaded file %s\n", message.content.c_str());
 	}
 	if (message.type == "join") {
+		setColor(Color::WHITE);
+		printf(" * ");
 		setColor(genColor(message.sender));
 		printf("%s", message.sender.c_str());
 		setColor(Color::WHITE);
-		printf("joined the group.");
+		printf(" joined the group.\n");
 	}
 	if (message.type == "leave") {
+		setColor(Color::WHITE);
+		printf(" * ");
 		setColor(genColor(message.sender));
 		printf("%s", message.sender.c_str());
 		setColor(Color::WHITE);
-		printf("left the group.");
+		printf(" left the group.\n");
 	}
 	if (message.type == "history_hint") {
 		setColor(Color::GRAY);
-		printf("Above are history messages.");
+		printf(" ^ History Messages ^\n");
 		setColor(Color::WHITE);
-		printf("left the group.");
 	}
 	if (message.type == "server") {
 		setColor(Color::RED);
-		printf("Server");
+		printf(" Server");
 		setColor(Color::WHITE);
 		printf(" > %s\n", message.content.c_str());
 	}
@@ -72,7 +75,7 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 
 void user_list_handler(const std::vector<uint8_t>& packet) {
 	UserList list = UserList::fromPacket(packet);
-	printf("There are %d users online:\n", list.usernames.size());
+	printf("There are %zd users online / in this group:\n", list.usernames.size());
 
 	for (string username : list.usernames) {
 		setColor(genColor(username));
@@ -85,30 +88,63 @@ void user_list_handler(const std::vector<uint8_t>& packet) {
 
 void overview_handler(const std::vector<uint8_t>& packet) {
 	ServerOverview overview = ServerOverview::fromPacket(packet);
+
+	setColor(Color::YELLOW);
+	printf("===========================\n");
+	printf("      Server Overview      \n");
+	printf("===========================\n\n");
+	setColor(Color::WHITE);
+
 	printf("There are %zd users online.\n", overview.online_count);
 
 	printf("There are %zd groups opened in this server:\n", overview.groups.size());
 
 	for (auto it : overview.groups) {
-		printf("    Group > %s (%zd)\n", it.first.c_str(), it.second);
+		printf("    - %s (%zd)\n", it.first.c_str(), it.second);
 	}
 
 	printf("\nThere are %zd users have messaged you:\n", overview.dms.size());
 	for (auto it : overview.dms) {
 		string name = it.first;
 		setColor(genColor(name));
-		printf("  %s ", name.c_str());
+		printf("    - %s ", name.c_str());
 		setColor(Color::WHITE);
 		printf("(%zd)\n", it.second);
 	}
 
 	printf("\n");
-	printf("  /overview : refresh overview\n");
-	printf("  /join_group <GroupName> : Join a existing group\n");
-	printf("  /create_group <GroupName> : Create a group\n");
-	printf("  /remove_group <GroupName> : Remove an empty group\n");
 
-	printf("  /join_dm <Username> : Direct message to somebody\n");
-	printf("  /list : List online users");
+	setColor(Color::YELLOW);
+	printf("  /overview");
+	setColor(Color::WHITE);
+	printf(" : Refresh overview\n");
+
+	setColor(Color::YELLOW);
+	printf("  /join_group");
+	setColor(Color::WHITE);
+	printf(" <GroupName> : Join a existing group\n");
+
+	setColor(Color::YELLOW);
+	printf("  /create_group");
+	setColor(Color::WHITE);
+	printf(" <GroupName> : Create a group\n");
+
+	setColor(Color::YELLOW);
+	printf("  /remove_group");
+	setColor(Color::WHITE);
+	printf(" <GroupName> : Remove an empty group group\n");
+
+	setColor(Color::YELLOW);
+	printf("  /join_dm");
+	setColor(Color::WHITE);
+	printf(" <Username> : Direct message to somebody\n");
+
+	setColor(Color::YELLOW);
+	printf("  /list");
+	setColor(Color::WHITE);
+	printf(" : List online users\n");
+
+
+	printf("\n");
 
 }

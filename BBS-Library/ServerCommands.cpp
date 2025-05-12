@@ -80,9 +80,9 @@ UserList UserList::fromPacket(std::vector<uint8_t> packet) {
 	size_t cml = take_uint8(packet, counter++);
 	counter += cml;
 
-	size_t count = take_uint8(packet, counter++);
+	size_t total_count = take_uint8(packet, counter++);
 
-	for (size_t i = 0; i < count; i++) {
+	for (size_t i = 0; i < total_count; i++) {
 		size_t len = take_uint8(packet, counter++);
 		string name = take_string(packet, counter, len);
 		counter += len;
@@ -99,6 +99,8 @@ std::vector<uint8_t> UserList::toPacket() {
 	const static std::string COMMAND = std::string("user_list");
 	append_uint8(buffer, COMMAND.size());
 	append_vector(buffer, COMMAND);
+
+	append_uint8(buffer, this->usernames.size());
 
 	for (auto name : this->usernames) {
 		append_uint8(buffer, name.size());

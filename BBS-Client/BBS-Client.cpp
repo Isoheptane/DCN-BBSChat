@@ -20,6 +20,7 @@
 
 #include "ClientAuthCommands.h"
 #include "ClientMessageCommands.h"
+#include "ClientGroupDMCommands.h"
 
 using std::cout;
 using std::cin;
@@ -110,10 +111,43 @@ int main()
 			// packet to be sent
 			vector<uint8_t> packet;
 
-			if (command == "/overview") {
-				makeBodylessPacket("overview");
+			if (command == "/lobby") {
+				packet = makeBodylessPacket("lobby");
+			} 
+			else if (command == "/overview") {
+				packet = makeBodylessPacket("overview");
 			}
-
+			else if (command == "/list") {
+				packet = makeBodylessPacket("list");
+			}
+			else if (command == "/create_group") {
+				if (arg == "INVALID_STRING") {
+					printf("Please specify group name.\n");
+					continue;
+				}
+				packet = ClientGroupDMCommands::createGroupCommand(arg).toPacket();
+			}
+			else if (command == "/join_group") {
+				if (arg == "INVALID_STRING") {
+					printf("Please specify group name.\n");
+					continue;
+				}
+				packet = ClientGroupDMCommands::joinGroupCommand(arg).toPacket();
+			}
+			else if (command == "/remove_group") {
+				if (arg == "INVALID_STRING") {
+					printf("Please specify group name.\n");
+					continue;
+				}
+				packet = ClientGroupDMCommands::removeGroupCommand(arg).toPacket();
+			}
+			else if (command == "/join_dm") {
+				if (arg == "INVALID_STRING") {
+					printf("Please specify user name.\n");
+					continue;
+				}
+				packet = ClientGroupDMCommands::joinDMCommand(arg).toPacket();
+			}
 			queue.get()->push(packet);
 			continue;
 		}

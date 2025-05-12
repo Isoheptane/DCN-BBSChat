@@ -6,8 +6,8 @@ using std::string;
 using std::vector;
 
 // Constructor for group or DM command
-ClientGroupDMCommands::ClientGroupDMCommands(std::string command, std::string groupName, std::string username)
-    : command(std::move(command)), groupName(std::move(groupName)), username(std::move(username)) {
+ClientGroupDMCommands::ClientGroupDMCommands(std::string command, std::string name)
+    : command(std::move(command)), name(std::move(name)) {
 }
 
 // Static method to create a "create group" command
@@ -27,7 +27,7 @@ ClientGroupDMCommands ClientGroupDMCommands::removeGroupCommand(const std::strin
 
 // Static method to create a "join DM" command
 ClientGroupDMCommands ClientGroupDMCommands::joinDMCommand(const std::string& username) {
-    return ClientGroupDMCommands("join_dm", "", username);
+    return ClientGroupDMCommands("join_dm", username);
 }
 
 // Serialize the command into a protocol-compliant packet
@@ -38,17 +38,22 @@ vector<uint8_t> ClientGroupDMCommands::toPacket() const {
     append_uint8(buffer, static_cast<uint8_t>(command.size()));
     append_vector(buffer, command);
 
-    // For "create_group", "join_group", and "remove_group", include the group name
-    if (command == "create_group" || command == "join_group" || command == "remove_group") {
-        append_uint8(buffer, static_cast<uint8_t>(groupName.size()));
-        append_vector(buffer, groupName);
-    }
-
-    // For "join_dm", include the username
-    if (command == "join_dm") {
-        append_uint8(buffer, static_cast<uint8_t>(username.size()));
-        append_vector(buffer, username);
-    }
+	append_uint8(buffer, static_cast<uint8_t>(name.size()));
+	append_vector(buffer, name);
 
     return buffer;
+}
+
+ClientGroupDMCommands ClientGroupDMCommands::fromPacket(std::vector<uint8_t> packet) {
+
+	size_t counter = 0;
+	size_t cml = take_uint8(packet, counter++);
+	string command = take_string(packet, counter, cml);
+	counter += cml;
+
+	size_t nameLen = take_uint8(packet, counter++);
+	string name = take_string(packet, counter, nameLen);
+	counter += nameLen;
+
+	return ClientGroupDMCommands(command, name);
 }

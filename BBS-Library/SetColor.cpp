@@ -11,8 +11,9 @@ namespace SetColor {
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hConsole, color);
     }
-    WORD genColor(string name) {
-        const static WORD colors[] = {
+
+    Color genColor(string name) {
+        const static Color colors[] = {
             Color::RED,
             Color::YELLOW,
             Color::GREEN,
@@ -29,7 +30,7 @@ namespace SetColor {
 
         int vector = 0;
         for (char ch : name) {
-            vector = (vector + ch) % sizeof(colors);
+            vector = (vector + ch) % 12;
         }
 
         return colors[vector];

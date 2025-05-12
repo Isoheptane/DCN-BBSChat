@@ -37,6 +37,9 @@ public:
 	void remove_session(std::string session_id);
 
 	ServerOverview get_overview(std::string user);
+	UserList get_userlist();
+
+	void remove_from_group(std::shared_ptr<Session> session);
 };
 
 extern Server global_server;

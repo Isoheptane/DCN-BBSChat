@@ -20,9 +20,12 @@ public:
     static ClientFileCommand fileDeleteCommand(const std::string& fileName);
 
     // Serialize command into a protocol-compliant packet
-    std::vector<uint8_t> toPacket() const;
+    std::vector<uint8_t> toPacket();
 
-private:
+    // Deserialize
+    static ClientFileCommand fromPacket(std::vector<uint8_t>);
+
+
     std::string commandType;    // Command type, e.g., "file_download", "file_upload", "file_delete"
     std::string fileName;       // File name (relevant for all file commands)
     std::vector<uint8_t> fileData; // File data (relevant for file upload)

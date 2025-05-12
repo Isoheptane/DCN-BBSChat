@@ -5,10 +5,6 @@
 #include <string>
 
 namespace SetColor {
-    // set the color of the word
-    void setColor(WORD color);
-    WORD genColor(std::string name);
-
     // Common color definitions
     enum Color {
         BLACK = 0,
@@ -28,5 +24,9 @@ namespace SetColor {
         LIGHT_YELLOW = 14,
         BRIGHT_WHITE = 15
     };
+
+    // set the color of the word
+    void setColor(WORD color);
+    Color genColor(std::string name);
 }
 #pragma once

@@ -21,7 +21,7 @@ ClientFileCommand ClientFileCommand::fileDeleteCommand(const string& fileName) {
     return ClientFileCommand("file_delete", fileName);
 }
 
-vector<uint8_t> ClientFileCommand::toPacket() const {
+vector<uint8_t> ClientFileCommand::toPacket() {
     vector<uint8_t> buffer;
 
     // Command type

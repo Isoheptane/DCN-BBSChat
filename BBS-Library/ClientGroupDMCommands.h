@@ -8,7 +8,7 @@
 class ClientGroupDMCommands {
 public:
     // Constructor for joining or creating a group or DM
-    ClientGroupDMCommands(std::string command, std::string groupName = "", std::string username = "");
+    ClientGroupDMCommands(std::string command, std::string name = "");
 
     // Static methods to create specific commands
     static ClientGroupDMCommands createGroupCommand(const std::string& groupName);
@@ -18,11 +18,10 @@ public:
 
     // Serialize the command into a protocol-compliant packet
     std::vector<uint8_t> toPacket() const;
+    static ClientGroupDMCommands fromPacket(std::vector<uint8_t>);
 
-private:
     std::string command;
-    std::string groupName;
-    std::string username;
+    std::string name;
 };
 
 #endif // CLIENTGROUPDMCOMMANDS_H

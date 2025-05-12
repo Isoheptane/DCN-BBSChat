@@ -17,7 +17,7 @@ ClientMessage ClientMessage::fileHintMessage(const string& content) {
     return ClientMessage("file_hint", content);
 }
 
-vector<uint8_t> ClientMessage::toPacket() const {
+vector<uint8_t> ClientMessage::toPacket() {
     vector<uint8_t> buffer;
     const static string COMMAND = "message";
 
@@ -31,4 +31,22 @@ vector<uint8_t> ClientMessage::toPacket() const {
     append_vector(buffer, content);
 
     return buffer;
+}
+
+ClientMessage ClientMessage::fromPacket(vector<uint8_t> packet) {
+
+    size_t counter = 0;
+    size_t cml = take_uint8(packet, counter++);
+    counter += cml;
+
+    size_t typeLen = take_uint8(packet, counter++);
+    string type = take_string(packet, counter, typeLen);
+    counter += typeLen;
+
+    size_t contentLen = take_uint16(packet, counter);
+    counter += 2;
+    string content = take_string(packet, counter, contentLen);
+    counter += contentLen;
+
+    return ClientMessage(type, content);
 }
