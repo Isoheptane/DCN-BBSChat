@@ -38,6 +38,7 @@ public:
 	int client_handshake();
 	int receive_packet(std::vector<uint8_t>& packet);
 	int send_packet(std::vector<uint8_t> packet);
+	int available(size_t wait_us);
 	bool connected();
 	void disconnect();
 };
