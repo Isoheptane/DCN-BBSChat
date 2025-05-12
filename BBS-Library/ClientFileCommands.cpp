@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ClientFileCommands.h"
-#include "Buffer.hpp"  // Assuming Buffer.hpp has necessary append methods
+#include "Buffer.hpp"
 
 using std::string;
 using std::vector;
