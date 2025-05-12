@@ -1,5 +1,7 @@
 #include "server.h"
 
+#include <fstream>
+
 #include "windows.h"
 
 using std::string;
@@ -11,11 +13,25 @@ void Server::new_user(string username, vector<uint8_t> password) {
 	std::lock_guard<std::recursive_mutex> guard(this->users_mutex);
 	auto user = std::make_shared<User>(username, password);
 	this->users[username] = user;
+
+	// Write data to files
+	std::ofstream ofs = std::ofstream("./users.txt");
+	if (ofs.good()) {
+		std::string password_str;
+		for (uint8_t byte : password) {
+			const static char dict[] = "0123456789abcdef";
+			password_str.push_back(dict[(byte >> 4) & 0xF]);
+			password_str.push_back(dict[(byte >> 0) & 0xF]);
+		}
+		ofs << username << " " << password_str << "\n";
+	}
 }
+
 bool Server::exist_user(string username) {
 	std::lock_guard<std::recursive_mutex> guard(this->users_mutex);
 	return this->users.find(username) != this->users.end();
 }
+
 bool Server::verify_user(string username, vector<uint8_t> password) {
 	std::lock_guard<std::recursive_mutex> guard(this->users_mutex);
 	if (!this->exist_user(username)) {
@@ -34,6 +50,14 @@ void Server::new_group(std::string name) {
 	std::lock_guard<std::recursive_mutex> guard(this->groups_mutex);
 	auto group = std::make_shared<Group>(name);
 	this->groups[name] = group;
+
+	// Write data to files
+	std::ofstream ofs = std::ofstream("./groups.txt");
+	if (ofs.good()) {
+		for (auto it : this->groups) {
+			ofs << it.second.get()->name << "\n";
+		}
+	}
 }
 
 bool Server::exist_group(std::string name) {
@@ -51,6 +75,14 @@ bool Server::remove_group(std::string name) {
 		return false;
 	}
 	this->groups.erase(name);
+
+	// Write data to files
+	std::ofstream ofs = std::ofstream("./groups.txt");
+	if (ofs.good()) {
+		for (auto it : this->groups) {
+			ofs << it.second.get()->name << "\n";
+		}
+	}
 }
 
 std::shared_ptr<Group> Server::get_group(std::string name) {
