@@ -1,5 +1,7 @@
 #include "listener.h"
 #include "SecConn.h"
+#include "ServerCommands.h"
+#include "session.h"
 
 #include <cstdio>
 #include <cstdint>
@@ -48,7 +50,12 @@ void connectionHandler(SocketW sockw) {
 	conn.server_handshake();
 	printf("[%s:%d] Encryption layer handshake success\n", epAddr.c_str(), epPort);
 
-	// Receive packets loop
+	// Create session
+	std::shared_ptr<Session> session = std::make_shared<Session>();
+
+	session.get()->packet_push(ServerMessage::welcomeMessage("Welcome to this Chatroom.").toPacket());
+
+	// Connection processing loop
 	while (conn.connected()) {
 		// Non-blocking readibility check
 		int available = conn.available(10000);
@@ -59,23 +66,34 @@ void connectionHandler(SocketW sockw) {
 		}
 		if (available > 0) {
 			// Process packets
-			vector<uint8_t> packet;
-			int status = conn.receive_packet(packet);
-			if (status != SecConnStatus::SECONN_OK) {
-				printf("[%s:%d] Failed to receive packet (Error %d, %d), disconnecting...\n", epAddr.c_str(), epPort, status, WSAGetLastError());
-				// Maybe close the connection
-				conn.disconnect();
-				break;
+			while (conn.available(0)) {
+				vector<uint8_t> packet;
+				int status = conn.receive_packet(packet);
+				if (status != SecConnStatus::SECONN_OK) {
+					printf("[%s:%d] Failed to receive packet (Error %d, %d), disconnecting...\n", epAddr.c_str(), epPort, status, WSAGetLastError());
+					// Maybe close the connection
+					conn.disconnect();
+					break;
+				}
+				// Process received packet
+
+				// Dummy Processor
+				packet.push_back('\0');
+				printf("Length %d:\n > %s\n", packet.size(), packet.data());
 			}
-			// Process received packet
-			
-			// Dummy Processor
-			packet.push_back('\0');
-			printf("Length %d:\n > %s\n", packet.size(), packet.data());
 		}
 		else {
 			// Write operations
-
+			while (session.get()->packet_pending()) {
+				vector<uint8_t> packet = session.get()->packet_take();
+				int status = conn.send_packet(packet);
+				if (status != SecConnStatus::SECONN_OK) {
+					printf("[%s:%d] Failed to send packet (Error %d, %d), disconnecting...\n", epAddr.c_str(), epPort, status, WSAGetLastError());
+					// Maybe close the connection
+					conn.disconnect();
+					break;
+				}
+			}
 		}
 	}
 

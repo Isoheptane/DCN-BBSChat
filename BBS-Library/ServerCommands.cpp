@@ -5,11 +5,6 @@
 using std::string;
 using std::vector;
 
-std::string getPacketCommand(const std::vector<uint8_t>& packet) {
-	size_t length = take_uint8(packet, 0);
-	return take_string(packet, 1, length);
-}
-
 /*
 *	Server Overview
 */
@@ -50,7 +45,7 @@ ServerOverview ServerOverview::fromPacket(std::vector<uint8_t> packet) {
 std::vector<uint8_t> ServerOverview::toPacket() {
 	std::vector<uint8_t> buffer;
 
-	const static std::string COMMAND = std::string("message");
+	const static std::string COMMAND = std::string("overview");
 	append_uint8(buffer, COMMAND.size());
 	append_vector(buffer, COMMAND);
 

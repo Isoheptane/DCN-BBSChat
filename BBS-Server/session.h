@@ -6,10 +6,10 @@
 #include <mutex>
 
 enum SessionState {
-	WAIT,	// Waiting for authentication
-	LOBBY,	// In lobby
-	DM,		// In direct message page
-	GROUP,	// In group
+	STATE_WAIT,	// Waiting for authentication
+	STATE_LOBBY,	// In lobby
+	STATE_DM,		// In direct message page
+	STATE_GROUP,	// In group
 };
 
 class Session
@@ -30,6 +30,6 @@ public:
 	bool packet_pending();
 	void packet_push(std::vector<uint8_t> packet);
 	std::vector<uint8_t> packet_take();
-	
+
 };
 
