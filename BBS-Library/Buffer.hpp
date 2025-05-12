@@ -29,7 +29,7 @@ inline void append_uint16(std::vector<uint8_t>& vector, uint16_t value) {
 inline std::string take_string(const std::vector<uint8_t>& vector, size_t start, size_t count) {
 	std::string str;
 	for (size_t i = 0; i < count && start + i < vector.size(); i++) {
-		str.push_back(vector[i]);
+		str.push_back(vector[start + i]);
 	}
 	return str;
 }
@@ -37,7 +37,7 @@ inline std::string take_string(const std::vector<uint8_t>& vector, size_t start,
 inline std::vector<uint8_t> take_bytes(const std::vector<uint8_t>& vector, size_t start, size_t count) {
 	std::vector<uint8_t> buf;
 	for (size_t i = 0; i < count && start + i < vector.size(); i++) {
-		buf.push_back(vector[i]);
+		buf.push_back(vector[start + i]);
 	}
 	return buf;
 }
