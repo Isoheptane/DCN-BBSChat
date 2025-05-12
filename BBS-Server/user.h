@@ -14,13 +14,14 @@ using std::string;
 
 class User
 {
-public:
-	string name;
-	string password;
+private:
 	// Message to be sent
 	std::map<string, std::deque<Message>> dm_pending;
 	// DM Pending mutex
 	std::mutex dm_pending_mutex;
+public:
+	string name;
+	string password;
 
 	User(string name, string password);
 

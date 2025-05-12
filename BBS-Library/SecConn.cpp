@@ -177,6 +177,10 @@ int SecConn::send_packet(vector<uint8_t> packet) {
 	return 0;
 }
 
+int SecConn::available(size_t wait_us) {
+	return this->socket.available(wait_us);
+}
+
 bool SecConn::connected() {
 	return this->socket.isConnected();
 }

@@ -26,3 +26,4 @@ namespace SetColor {
         BRIGHT_WHITE = 15
     };
 }
+#pragma once

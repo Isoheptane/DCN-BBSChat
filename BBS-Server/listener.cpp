@@ -44,26 +44,40 @@ void connectionHandler(SocketW sockw) {
 	// Create secured connection upon socket
 	SecConn conn(sockw);
 	// Key exchange handshake
-	printf("Client %s:%d initiating encryption layer handshake...\n", epAddr.c_str(), epPort);
+	printf("[%s:%d] Initiating encryption layer handshake...\n", epAddr.c_str(), epPort);
 	conn.server_handshake();
-	printf("Client %s:%d encryption layer handshake success\n", epAddr.c_str(), epPort);
+	printf("[%s:%d] Encryption layer handshake success\n", epAddr.c_str(), epPort);
 
 	// Receive packets loop
 	while (conn.connected()) {
-		vector<uint8_t> packet;
-		int status = conn.receive_packet(packet);
-		if (status != SecConnStatus::SECONN_OK) {
-			printf("Failed to receive packet (Error %d)\n", status);
-			// Maybe close the connection
+		// Non-blocking readibility check
+		int available = conn.available(10000);
+		if (available < 0) {
+			printf("[%s:%d] Failed to check availability (Error %d), disconnecting...\n", epAddr.c_str(), epPort, WSAGetLastError());
 			conn.disconnect();
 			break;
 		}
-		// Process received packet
-		
-		// Dummy Processor
-		packet.push_back('\0');
-		printf("Length %d:\n > %s\n", packet.size(), packet.data());
+		if (available > 0) {
+			// Process packets
+			vector<uint8_t> packet;
+			int status = conn.receive_packet(packet);
+			if (status != SecConnStatus::SECONN_OK) {
+				printf("[%s:%d] Failed to receive packet (Error %d, %d), disconnecting...\n", epAddr.c_str(), epPort, status, WSAGetLastError());
+				// Maybe close the connection
+				conn.disconnect();
+				break;
+			}
+			// Process received packet
+			
+			// Dummy Processor
+			packet.push_back('\0');
+			printf("Length %d:\n > %s\n", packet.size(), packet.data());
+		}
+		else {
+			// Write operations
+
+		}
 	}
 
-	printf("Client %s:%d disconnected.\n", epAddr.c_str(), epPort);
+	printf("[%s:%d] Client disconnected.\n", epAddr.c_str(), epPort);
 }

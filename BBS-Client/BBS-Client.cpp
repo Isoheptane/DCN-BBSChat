@@ -14,6 +14,7 @@ using std::cout;
 using std::cin;
 using std::endl;
 using std::string;
+using std::vector;
 
 using WinSock::SocketW;
 using WinSock::SocketWStatus;

@@ -186,6 +186,21 @@ namespace WinSock {
         return received;
     }
 
+    int SocketW::available(size_t wait_us) {
+        fd_set set;
+        FD_ZERO(&set);
+        FD_SET(this->sock, &set);
+
+        timeval timeout;
+        timeout.tv_sec = wait_us / 1000000;
+        timeout.tv_usec = wait_us % 1000000;
+        int result = ::select(0, &set, NULL, NULL, &timeout);
+        if (result < 0) {
+            return SocketWStatus::SW_ERR;
+        }
+        return result;
+    }
+
     void SocketW::close() {
         if (sock != INVALID_SOCKET) {
             closesocket(sock);

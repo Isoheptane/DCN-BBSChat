@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BBS-Server.cpp" />
+    <ClCompile Include="group.cpp" />
     <ClCompile Include="listener.cpp" />
     <ClCompile Include="message.cpp" />
     <ClCompile Include="user.cpp" />
@@ -142,6 +143,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="group.h" />
     <ClInclude Include="listener.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="user.h" />

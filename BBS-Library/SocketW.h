@@ -47,6 +47,7 @@ namespace WinSock {
         int recv(uint8_t* buffer, int length);
         int sendAll(const uint8_t* buffer, int length);
         int recvAll(uint8_t* buffer, int length);
+        int available(size_t wait_us);
         void close();
         bool isConnected();
         const sockaddr_in* getSockAddr();
