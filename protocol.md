@@ -13,9 +13,6 @@ Body part will hold all data used in operations
 
 ## Client to Server
 
-#### Command `heartbeat`
-This command has no body, just used for keeping a connection.
-
 ### Authentication
 #### Command `login`
 User requests for login in.
@@ -143,10 +140,15 @@ A client should call file_upload repeatedly until the file is fully uploaded.
 | Appended Block Length | uint16 | 2 Byte |
 | File Name | uint8[] | Vary |
 
-### Command `logout`
+### Miscellaneous
+
+#### Command `logout`
 User requests to logout
 
 This command has no body.
+
+#### Command `heartbeat`
+This command has no body, just used for keeping a connection.
 
 ## Server to Client
 ### Info List
