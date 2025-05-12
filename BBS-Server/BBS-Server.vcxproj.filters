@@ -24,10 +24,16 @@
     <ClCompile Include="user.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="message.cpp">
+    <ClCompile Include="group.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="group.cpp">
+    <ClCompile Include="server.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="session.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketGenerator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +44,16 @@
     <ClInclude Include="user.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="message.h">
+    <ClInclude Include="group.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="group.h">
+    <ClInclude Include="server.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="session.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketGenerator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

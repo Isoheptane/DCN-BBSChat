@@ -6,8 +6,7 @@
 | ------: | :--: | :--: |
 | Command Length | uint8 | 1 Byte |
 | Command | string | Vary |
-| Body Length | uint16 | 16 Byte |
-| Body | uint8[] | Vary |
+| Body... |
 
 Body part will hold all data used in operations
 
@@ -83,33 +82,17 @@ If the user is in a group, list users in the group, else list users that are onl
 This command has no body.
 
 ### Messages
-#### Command `text`
-Send text message.
+#### Command `message`
+Send a message to the client.
 
 | Content | Type | Size |
 | ------: | :--: | :--: |
+| Typename Length | uint8 | 1 Byte |
+| Typename | string | Vary |
 | Message Content Length | uint16 | 2 Byte |
 | Message Content | string | Vary |
 
-#### Command `whisper`
-Send a whisper text message to a user.
-
-If the user is in a group, send whisper to the group. But only the receiver would see. 
-
-| Content | Type | Size |
-| ------: | :--: | :--: |
-| Username Length | uint8 | 1 Byte |
-| Username | string | Vary |
-| Message Content Length | uint16 | 2 Byte |
-| Message Content | string | Vary |
-
-#### Command `file_hint`
-Send a message of hinting a file name uploaded on server. This is used to notify others that you have uploaded a file.
-
-| Content | Type | Size |
-| ------: | :--: | :--: |
-| File Name Length | uint16 | 2 Byte |
-| File Name | string | Vary |
+Message type can be "text" or "file_hint".
 
 ### File Operations
 #### Command `file_download`
@@ -182,56 +165,24 @@ When the user requested to list users, send username of users that are online.
 | User N Name | string | Vary |
 
 ### Message
-#### Command `welcome`
-Send a welcome message to the client when the peer logs in This is usually shown as MOTD.
-
-| Content | Type | Size |
-| ------: | :--: | :--: |
-| Message Content Length | uint16 | 2 Byte |
-| Message Content | string | Vary |
-
-#### Command `text`
-Forward a text message to the client.
+#### Command `message`
+Forward a message to the client.
 
 | Content | Type | Size |
 | ------: | :--: | :--: |
 | Username Length | uint8 | 1 Byte |
 | Username | string | Vary |
+| Typename Length | uint8 | 1 Byte |
+| Typename | string | Vary |
 | Message Content Length | uint16 | 2 Byte |
 | Message Content | string | Vary |
 
-#### Command `whisper`
-Forward a text message to the client.
+Message type can be 
+"text", "file_hint", "join", "leave", "server", "history_hint", "welcome"
 
-| Content | Type | Size |
-| ------: | :--: | :--: |
-| Username Length | uint8 | 1 Byte |
-| Username | string | Vary |
-| Message Content Length | uint16 | 2 Byte |
-| Message Content | string | Vary |
+For "text", "file_hint", "join" and "leave", username is necessary.
 
-#### Command `file_hint`
-Forward a file_hint to the client.
-
-| Content | Type | Size |
-| ------: | :--: | :--: |
-| Username Length | uint8 | 1 Byte |
-| Username | string | Vary |
-| File Name Length | uint16 | 2 Byte |
-| File Name | string | Vary |
-
-#### Command `history_message`
-Notify the client that the previously sent messages are history messages.
-
-This command has no body.
-
-#### Command `server_message`
-Send a server side message to the client. This is usually used to notify the user about errors.
-
-| Content | Type | Size |
-| ------: | :--: | :--: |
-| Message Content Length | uint16 | 2 Byte |
-| Message Content | string | Vary |
+For "text", "file_hint", "server" and "welcome", content is necessary.
 
 ### File Operations
 #### Command `file_send`
