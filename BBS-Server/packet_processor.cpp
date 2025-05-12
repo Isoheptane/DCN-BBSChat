@@ -150,6 +150,12 @@ void overview_handler(HANDLER_ARGS) {
 
 void create_group_handler(HANDLER_ARGS) {
 
+	// User can't create a group if the user is already in a group
+	if (session.get()->state == SessionState::STATE_GROUP) {
+		session.get()->packet_push(ServerMessage::serverMessage("You are already in a group. Use /lobby command to go back to lobby before joining a new group.").toPacket());
+		return;
+	}
+
 	ClientGroupDMCommands command = ClientGroupDMCommands::fromPacket(packet);
 	
 	if (global_server.exist_group(command.name)) {

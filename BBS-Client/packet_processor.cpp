@@ -22,6 +22,7 @@ void server_message_handler(const std::vector<uint8_t>&packet);
 void user_list_handler(const std::vector<uint8_t>&packet);
 void overview_handler(const std::vector<uint8_t>&packet);
 void file_send_handler(const std::vector<uint8_t>&packet);
+void disconnect_handler(const std::vector<uint8_t>&packet);
 
 void packet_processor(const std::vector<uint8_t>& packet) {
 	std::string command = getPacketCommand(packet);
@@ -31,6 +32,7 @@ void packet_processor(const std::vector<uint8_t>& packet) {
 	HANDLE_IF_MATCH("user_list", user_list_handler);
 	HANDLE_IF_MATCH("overview", overview_handler);
 	HANDLE_IF_MATCH("file_send", file_send_handler);
+	HANDLE_IF_MATCH("disconnect", disconnect_handler);
 
 	printf("Unknown message type %s, ignored.", command.c_str());
 }
@@ -179,4 +181,9 @@ void file_send_handler(const std::vector<uint8_t>& packet) {
 	else {
 		printf("Failed to create and store file to downloads\n");
 	}
+}
+
+void disconnect_handler(const std::vector<uint8_t>& packet) {
+	printf("Server closed connection.\n");
+	exit(0);
 }
