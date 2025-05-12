@@ -40,3 +40,30 @@ vector<uint8_t> ClientFileCommand::toPacket() {
 
     return buffer;
 }
+
+ClientFileCommand ClientFileCommand::fromPacket(std::vector<uint8_t> packet) {
+
+    size_t counter = 0;
+    size_t cml = take_uint8(packet, counter++);
+    string type = take_string(packet, counter, cml);
+    counter += cml;
+
+    size_t nameLen = take_uint8(packet, counter++);
+    string name = take_string(packet, counter, nameLen);
+    counter += nameLen;
+
+    std::vector<uint8_t> content;
+
+    // Extra segement of file_upload
+    if (type == "file_upload") {
+        size_t contentLen = take_uint16(packet, counter);
+        counter += 2;
+        content = take_bytes(packet, counter, contentLen);
+        if (contentLen != content.size()) {
+            printf("[ERROR] File upload packet receive error: Length not match\n");
+
+        }
+    }
+
+    return ClientFileCommand(type, name, content);
+}

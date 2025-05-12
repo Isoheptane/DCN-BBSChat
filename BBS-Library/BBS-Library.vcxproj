@@ -145,6 +145,7 @@
     <ClInclude Include="ClientGroupDMCommands.h" />
     <ClInclude Include="ClientMessageCommands.h" />
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="FileCache.h" />
     <ClInclude Include="ServerCommands.h" />
     <ClInclude Include="Crypto.h" />
     <ClInclude Include="Crypto_ECDH.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="ClientGroupDMCommands.cpp" />
     <ClCompile Include="ClientMessageCommands.cpp" />
     <ClCompile Include="Commands.cpp" />
+    <ClCompile Include="FileCache.cpp" />
     <ClCompile Include="ServerCommands.cpp" />
     <ClCompile Include="Crypto_AES.cpp" />
     <ClCompile Include="Crypto_ECDH.cpp" />
