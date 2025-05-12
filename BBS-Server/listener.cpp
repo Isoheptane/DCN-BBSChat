@@ -44,23 +44,25 @@ void connectionHandler(SocketW sockw) {
 	// Create secured connection upon socket
 	SecConn conn(sockw);
 	// Key exchange handshake
-	printf("Client %s:%d initiating encryption layer handshake...\n", epAddr.c_str(), epPort);
+	printf("[%s:%d] Initiating encryption layer handshake...\n", epAddr.c_str(), epPort);
 	conn.server_handshake();
-	printf("Client %s:%d encryption layer handshake success\n", epAddr.c_str(), epPort);
+	printf("[%s:%d] Encryption layer handshake success\n", epAddr.c_str(), epPort);
 
 	// Receive packets loop
 	while (conn.connected()) {
+		// Non-blocking readibility check
 		int available = conn.available(10000);
 		if (available < 0) {
-			printf("Failed to check availability of %s:%d (Error %d), disconnecting...\n", epAddr.c_str(), epPort, WSAGetLastError());
+			printf("[%s:%d] Failed to check availability (Error %d), disconnecting...\n", epAddr.c_str(), epPort, WSAGetLastError());
 			conn.disconnect();
 			break;
 		}
 		if (available > 0) {
+			// Process packets
 			vector<uint8_t> packet;
 			int status = conn.receive_packet(packet);
 			if (status != SecConnStatus::SECONN_OK) {
-				printf("Failed to receive packet (Error %d), disconnecting...\n", status);
+				printf("[%s:%d] Failed to receive packet (Error %d, %d), disconnecting...\n", epAddr.c_str(), epPort, status, WSAGetLastError());
 				// Maybe close the connection
 				conn.disconnect();
 				break;
@@ -72,11 +74,10 @@ void connectionHandler(SocketW sockw) {
 			printf("Length %d:\n > %s\n", packet.size(), packet.data());
 		}
 		else {
-			// Send data when there is no packet to be processed
-			printf("NOT AVAILABLE\n");
+			// Write operations
+
 		}
-		Sleep(10);
 	}
 
-	printf("Client %s:%d disconnected.\n", epAddr.c_str(), epPort);
+	printf("[%s:%d] Client disconnected.\n", epAddr.c_str(), epPort);
 }
