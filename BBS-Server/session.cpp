@@ -3,7 +3,7 @@
 
 
 Session::Session() {
-	this->state = SessionState::WAIT;
+	this->state = SessionState::STATE_WAIT;
 }
 
 bool Session::packet_pending() {

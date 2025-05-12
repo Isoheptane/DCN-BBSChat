@@ -6,8 +6,6 @@
 #include <map>
 #include <cstdint>
 
-std::string getPacketCommand(const std::vector<uint8_t>& packet);
-
 struct ServerOverview
 {
 	size_t online_count;

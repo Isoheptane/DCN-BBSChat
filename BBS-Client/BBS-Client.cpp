@@ -9,6 +9,7 @@
 #include "Crypto.h"
 #include "SocketW.h"
 #include "SecConn.h"
+#include "Commands.h"
 
 using std::cout;
 using std::cin;
@@ -36,19 +37,30 @@ int main()
     conn.client_handshake();
 
     while (true) {
-        printf("Your Message: ");
-        string data;
-        cin >> data;
-        
-        vector<uint8_t> buffer;
-        for (int i = 0; i < data.size(); i++) {
-            buffer.push_back(data.data()[i]);
-        }
-
-        if (conn.send_packet(buffer) != SecConnStatus::SECONN_OK) {
-            printf("Failed to send packet\n");
-            return -1;
-        }
+		int available = conn.available(10000);
+		if (available < 0) {
+			printf("Failed to check availability (Error %d), disconnecting...\n", WSAGetLastError());
+			conn.disconnect();
+			break;
+		}
+		if (available > 0) {
+			// Process packets
+			while (conn.available(0)) {
+				vector<uint8_t> packet;
+				int status = conn.receive_packet(packet);
+				if (status != SecConnStatus::SECONN_OK) {
+					printf("Failed to receive packet (Error %d, %d), disconnecting...\n", status, WSAGetLastError());
+					// Maybe close the connection
+					conn.disconnect();
+					break;
+				}
+				string packetType = getPacketCommand(packet);
+				printf("Received command %s packet\n", packetType.c_str());
+			}
+		}
+		else {
+			// Write operations
+		}
     }
     return 0;
 }
