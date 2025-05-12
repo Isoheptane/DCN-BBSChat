@@ -159,7 +159,8 @@ ServerMessage ServerMessage::fromPacket(vector<uint8_t> packet) {
 	string sender = take_string(packet, counter, senderLen);
 	counter += senderLen;
 
-	size_t contentLen = take_uint16(packet, counter++);
+	size_t contentLen = take_uint16(packet, counter);
+	counter += 2;
 	string content = take_string(packet, counter, contentLen);
 	counter += contentLen;
 
@@ -179,6 +180,43 @@ vector<uint8_t> ServerMessage::toPacket() {
 	append_vector(buffer, this->sender);
 	append_uint16(buffer, this->content.size());
 	append_vector(buffer, this->content);
+
+	return buffer;
+}
+
+/*
+*	Server File Send
+*/
+ServerFileSend ServerFileSend::fromPacket(std::vector<uint8_t> packet) {
+	ServerFileSend send;
+
+	size_t counter = 0;
+	size_t cml = take_uint8(packet, counter++);
+	counter += cml;
+
+	size_t nameLen = take_uint8(packet, counter++);
+	send.filename = take_string(packet, counter, nameLen);
+	counter += nameLen;
+
+	size_t blockLen = take_uint16(packet, counter);
+	counter += 2;
+	send.block = take_bytes(packet, counter, blockLen);
+
+	return send;
+}
+
+std::vector<uint8_t> ServerFileSend::toPacket() {
+	std::vector<uint8_t> buffer;
+
+	const static std::string COMMAND = std::string("file_send");
+	append_uint8(buffer, COMMAND.size());
+	append_vector(buffer, COMMAND);
+
+	append_uint8(buffer, this->filename.size());
+	append_vector(buffer, this->filename);
+
+	append_uint16(buffer, this->block.size());
+	append_vector(buffer, this->block);
 
 	return buffer;
 }
