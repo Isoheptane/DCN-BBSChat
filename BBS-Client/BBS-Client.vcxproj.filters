@@ -18,5 +18,25 @@
     <ClCompile Include="BBS-Client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="packet_queue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="conn_operator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="packet_processor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="packet_queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="conn_operator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="packet_processor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

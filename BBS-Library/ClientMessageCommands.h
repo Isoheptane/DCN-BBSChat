@@ -17,7 +17,6 @@ public:
     // Serialize the message to a protocol-compliant packet
     std::vector<uint8_t> toPacket() const;
 
-private:
     std::string type;     // Type of the message (e.g., "text", "file_hint")
     std::string content;  // The content of the message (e.g., text content, file hint)
 };

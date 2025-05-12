@@ -4,6 +4,7 @@
 #include "ServerCommands.h"
 #include "session.h"
 #include "packet_processor.h"
+#include "server.h"
 
 #include <cstdio>
 #include <cstdint>
@@ -53,12 +54,15 @@ void connectionHandler(SocketW sockw) {
 	printf("[%s:%d] Encryption layer handshake success\n", epAddr.c_str(), epPort);
 
 	// Create session
-	std::shared_ptr<Session> session = std::make_shared<Session>();
-
-	session.get()->packet_push(ServerMessage::welcomeMessage("Welcome to this Chatroom.").toPacket());
+	std::shared_ptr<Session> session = std::make_shared<Session>(epAddr, epPort);
+	// session.get()->packet_push(ServerMessage::welcomeMessage("Welcome to this Chatroom.").toPacket());
 
 	// Connection processing loop
 	while (conn.connected()) {
+		// Check if the connection still need to be completed
+		if (session.get()->state == SessionState::STATE_CLOSED && !session.get()->packet_pending()) { 
+			break;
+		}
 		// Non-blocking readibility check
 		int available = conn.available(10000);
 		if (available < 0) {
@@ -95,6 +99,8 @@ void connectionHandler(SocketW sockw) {
 			}
 		}
 	}
+
+	global_server.remove_session(session.get()->session_id);
 
 	printf("[%s:%d] Client disconnected.\n", epAddr.c_str(), epPort);
 }

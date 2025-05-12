@@ -56,5 +56,8 @@
     <ClInclude Include="packet_processor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="log.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

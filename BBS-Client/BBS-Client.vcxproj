@@ -132,11 +132,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BBS-Client.cpp" />
+    <ClCompile Include="conn_operator.cpp" />
+    <ClCompile Include="packet_processor.cpp" />
+    <ClCompile Include="packet_queue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BBS-Library\BBS-Library.vcxproj">
       <Project>{6bb0cece-a727-4f70-94a4-b8b0cb123e29}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="conn_operator.h" />
+    <ClInclude Include="packet_processor.h" />
+    <ClInclude Include="packet_queue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

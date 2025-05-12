@@ -3,17 +3,17 @@
 #include <vector>
 #include <string>
 
-inline void append_vector(std::vector<uint8_t>& vector, uint8_t* array, size_t count) {
+inline void append_vector(std::vector<uint8_t>& vector, const uint8_t* array, size_t count) {
 	for (size_t i = 0; i < count; i++) {
 		vector.push_back(array[i]);
 	}
 }
 
-inline void append_vector(std::vector<uint8_t>& vector, std::vector<uint8_t>& other) {
+inline void append_vector(std::vector<uint8_t>& vector, const std::vector<uint8_t>& other) {
 	vector.insert(vector.end(), other.begin(), other.end());
 }
 
-inline void append_vector(std::vector<uint8_t>& vector, std::string other) {
+inline void append_vector(std::vector<uint8_t>& vector, const std::string other) {
 	append_vector(vector, (uint8_t*)other.c_str(), other.size());
 }
 
@@ -22,6 +22,13 @@ inline void append_uint8(std::vector<uint8_t>& vector, uint8_t value) {
 }
 
 inline void append_uint16(std::vector<uint8_t>& vector, uint16_t value) {
+	vector.push_back(value >> 8 & 0xFF);
+	vector.push_back(value >> 0 & 0xFF);
+}
+
+inline void append_uint32(std::vector<uint8_t>& vector, uint32_t value) {
+	vector.push_back(value >> 24 & 0xFF);
+	vector.push_back(value >> 16 & 0xFF);
 	vector.push_back(value >> 8 & 0xFF);
 	vector.push_back(value >> 0 & 0xFF);
 }
@@ -54,4 +61,14 @@ inline uint16_t take_uint16(const std::vector<uint8_t>& vector, size_t position)
 		return 0;
 	}
 	return vector[position] * 256 + vector[position + 1];
+}
+
+inline uint32_t take_uint32(const std::vector<uint8_t>& vector, size_t position) {
+	if (position + 3 >= vector.size()) {
+		return 0;
+	}
+	return	(vector[position] << 24) +
+			(vector[position + 1] << 16) +
+			(vector[position + 2] << 8) + 
+			(vector[position + 3]);
 }

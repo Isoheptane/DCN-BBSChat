@@ -2,6 +2,7 @@
 
 #include "session.h"
 #include "ServerCommands.h"
+#include "ClientMessageCommands.h"
 
 #include <string>
 #include <mutex>
@@ -10,17 +11,21 @@
 
 class Group
 {
-private:
+public:
+
 	std::string name;
 	std::map<std::string, std::shared_ptr<Session>> users;
-	std::mutex users_mutex;
+	std::recursive_mutex users_mutex;
 	std::deque<ServerMessage> history;
-public:
+
 	Group(std::string name);
 	
 	void add_user(std::shared_ptr<Session> session);
 	void remove_user(std::shared_ptr<Session> session);
 	bool has_user(std::string name);
 	bool empty();
+
+	size_t count();
+	bool broadcast(std::string sender, ClientMessage message);
 };
 

@@ -18,8 +18,7 @@ std::vector<uint8_t> LoginCommand::toPacket() const {
     append_uint8(packet, static_cast<uint8_t>(username.size()));
     append_vector(packet, username);
     // Password (plain, will be hashed in Client.cpp)
-    if (password.size() > 255) throw std::length_error("Password too long (max 255 bytes for transmission)");
-    append_vector(packet, password);
+    append_vector(packet, this->password);
     return packet;
 }
 
@@ -37,7 +36,8 @@ LoginCommand LoginCommand::fromPacket(const std::vector<uint8_t>& packet) {
     std::string username = take_string(packet, pos, unameLen);
     pos += unameLen;
     // Password (rest of packet)
-    std::string password = take_string(packet, pos, packet.size() - pos);
+    std::vector<uint8_t> password = take_bytes(packet, pos, 32);
+    pos += 32;
     return LoginCommand{username, password};
 }
 
@@ -53,8 +53,8 @@ std::vector<uint8_t> RegisterCommand::toPacket() const {
     append_uint8(packet, static_cast<uint8_t>(username.size()));
     append_vector(packet, username);
     // Password (plain, will be hashed in Client.cpp)
-    if (password.size() > 255) throw std::length_error("Password too long (max 255 bytes for transmission)");
-    append_vector(packet, password);
+    append_vector(packet, this->password);
+
     return packet;
 }
 
@@ -72,6 +72,7 @@ RegisterCommand RegisterCommand::fromPacket(const std::vector<uint8_t>& packet) 
     std::string username = take_string(packet, pos, unameLen);
     pos += unameLen;
     // Password (rest of packet)
-    std::string password = take_string(packet, pos, packet.size() - pos);
-    return RegisterCommand{username, password};
+    std::vector<uint8_t> password = take_bytes(packet, pos, 32);
+    pos += 32;
+    return RegisterCommand{ username, password };
 }

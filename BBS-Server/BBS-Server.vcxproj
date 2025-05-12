@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="group.h" />
     <ClInclude Include="listener.h" />
+    <ClInclude Include="log.hpp" />
     <ClInclude Include="packet_processor.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="session.h" />

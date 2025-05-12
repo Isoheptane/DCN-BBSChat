@@ -2,6 +2,8 @@
 #include "ServerCommands.h"
 #include "Buffer.hpp"
 
+#include <ctime>
+
 using std::string;
 using std::vector;
 
@@ -111,6 +113,8 @@ std::vector<uint8_t> UserList::toPacket() {
 */
 ServerMessage::ServerMessage(string type, string sender, string content)
 	: type(type), sender(sender), content(content) {
+	time_t t = time(NULL);
+	this->timestamp = t;
 }
 
 ServerMessage ServerMessage::welcomeMessage(string message) {
@@ -142,6 +146,7 @@ ServerMessage ServerMessage::historyHintMessage() {
 }
 
 ServerMessage ServerMessage::fromPacket(vector<uint8_t> packet) {
+
 	size_t counter = 0;
 	size_t cml = take_uint8(packet, counter++);
 	counter += cml;
@@ -159,7 +164,12 @@ ServerMessage ServerMessage::fromPacket(vector<uint8_t> packet) {
 	string content = take_string(packet, counter, contentLen);
 	counter += contentLen;
 
-	return ServerMessage(type, sender, content);
+	uint32_t ts = take_uint32(packet, counter);
+
+	ServerMessage message = ServerMessage(type, sender, content);
+	message.timestamp = ts;
+
+	return message;
 }
 
 vector<uint8_t> ServerMessage::toPacket() {
@@ -175,6 +185,7 @@ vector<uint8_t> ServerMessage::toPacket() {
 	append_vector(buffer, this->sender);
 	append_uint16(buffer, this->content.size());
 	append_vector(buffer, this->content);
+	append_uint32(buffer, this->timestamp);
 
 	return buffer;
 }

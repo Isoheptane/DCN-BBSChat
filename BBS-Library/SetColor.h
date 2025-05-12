@@ -2,9 +2,12 @@
 
 #include <windows.h>
 
+#include <string>
+
 namespace SetColor {
     // set the color of the word
     void setColor(WORD color);
+    WORD genColor(std::string name);
 
     // Common color definitions
     enum Color {

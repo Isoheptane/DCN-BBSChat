@@ -1,6 +1,8 @@
 #include "packet_processor.h"
 
 #include "Commands.h"
+#include "ClientAuthCommands.h"
+#include "server.h"
 
 #include <string>
 
@@ -30,6 +32,8 @@ void heartbeat_handler(HANDLER_ARGS);
 void packet_processor(std::shared_ptr<Session> session, const std::vector<uint8_t>& packet) {
 	std::string command = getPacketCommand(packet);
 
+	// printf("Received command %s\n", command.c_str());
+
 	HANDLE_IF_MATCH("login", login_handler);
 	HANDLE_IF_MATCH("register", register_handler);
 	HANDLE_IF_MATCH("lobby", lobby_handler);
@@ -50,11 +54,56 @@ void packet_processor(std::shared_ptr<Session> session, const std::vector<uint8_
 }
 
 void login_handler(HANDLER_ARGS) {
+	LoginCommand command = LoginCommand::fromPacket(packet);
+	if (!global_server.verify_user(command.username, command.password)) {
+		printf(
+			"[%s:%d] Failed to authenticate as %s.\n",
+			session.get()->epAddr.c_str(), session.get()->epPort,
+			command.username.c_str()
+		);
+		session.get()->packet_push(ServerMessage::serverMessage("Authentication failed.").toPacket());
+		session.get()->state = SessionState::STATE_CLOSED;
+		return;
+	}
+	printf(
+		"[%s:%d] %s logged in.\n",
+		session.get()->epAddr.c_str(), session.get()->epPort,
+		command.username.c_str()
+	);
 
+	session.get()->user = command.username;
+	session.get()->state = STATE_LOBBY;
+	// Send a overview
+	session.get()->packet_push(global_server.get_overview(command.username).toPacket());
 }
 
 void register_handler(HANDLER_ARGS) {
+	// TODO: Add already registered check
+	// TODO: Add to user list
+	RegisterCommand command = RegisterCommand::fromPacket(packet);
+	// Check already registered
+	if (global_server.exist_user(command.username)) {
+		printf(
+			"[%s:%d] Failed to register %s because there is already a user with same name.\n",
+			session.get()->epAddr.c_str(), session.get()->epPort,
+			command.username.c_str()
+		);
+		session.get()->packet_push(ServerMessage::serverMessage("User already registered.").toPacket());
+		session.get()->state = SessionState::STATE_CLOSED;
+		return;
+	}
+	global_server.new_user(command.username, command.password);
+	printf(
+		"[%s:%d] New user %s registered.\n", 
+		session.get()->epAddr.c_str(), session.get()->epPort,
+		command.username.c_str()
+	);
 
+	session.get()->user = command.username;
+	global_server.add_session(session);
+	session.get()->state = STATE_LOBBY;
+	// Send a overview
+	session.get()->packet_push(global_server.get_overview(command.username).toPacket());
 }
 
 void lobby_handler(HANDLER_ARGS) {
@@ -66,7 +115,7 @@ void overview_handler(HANDLER_ARGS) {
 }
 
 void create_group_handler(HANDLER_ARGS) {
-
+	
 }
 
 void join_group_handler(HANDLER_ARGS) {

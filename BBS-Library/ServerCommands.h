@@ -31,6 +31,7 @@ struct ServerMessage
 	std::string type;
 	std::string sender;
 	std::string content;
+	uint32_t timestamp;
 
 	ServerMessage(std::string type, std::string sender, std::string content);
 

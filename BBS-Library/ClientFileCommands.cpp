@@ -35,7 +35,7 @@ vector<uint8_t> ClientFileCommand::toPacket() const {
     // If the command is for file upload, include file data
     if (commandType == "file_upload") {
         append_uint16(buffer, static_cast<uint16_t>(fileData.size()));
-        append_vector(buffer, fileData);
+        append_vector(buffer, this->fileData);
     }
 
     return buffer;
