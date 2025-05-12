@@ -85,6 +85,7 @@ void login_handler(HANDLER_ARGS) {
 	session.get()->user = command.username;
 	session.get()->state = STATE_LOBBY;
 	// Send a overview
+	session.get()->packet_push(ServerMessage::serverMessage("Welcome back!").toPacket());
 	session.get()->packet_push(global_server.get_overview(session.get()->user).toPacket());
 }
 
@@ -112,6 +113,7 @@ void register_handler(HANDLER_ARGS) {
 	global_server.add_session(session);
 	session.get()->state = STATE_LOBBY;
 	// Send a overview
+	session.get()->packet_push(ServerMessage::serverMessage("You have successully registered.").toPacket());
 	session.get()->packet_push(global_server.get_overview(session.get()->user).toPacket());
 }
 

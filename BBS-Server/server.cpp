@@ -28,7 +28,6 @@ std::shared_ptr<User> Server::get_user(std::string username) {
 	return this->users[username];
 }
 
-
 void Server::new_group(std::string name) {
 	std::lock_guard<std::recursive_mutex> guard(this->groups_mutex);
 	auto group = std::make_shared<Group>(name);
