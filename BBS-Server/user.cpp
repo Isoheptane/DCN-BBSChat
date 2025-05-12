@@ -4,16 +4,16 @@ User::User(string name, string password) : name(name), password(password) {
 
 }
 
-void User::push_direct_message(string sender, Message message) {
+void User::push_direct_message(string sender, ServerMessage message) {
 	std::lock_guard<std::mutex> guard(this->dm_pending_mutex);
-	dm_pending.emplace(sender, std::deque<Message>());
+	dm_pending.emplace(sender, std::deque<ServerMessage>());
 	dm_pending[sender].push_back(message);
 }
 
-std::vector<Message> User::fetch_direct_message(string sender) {
+std::vector<ServerMessage> User::fetch_direct_message(string sender) {
 	std::lock_guard<std::mutex> guard(this->dm_pending_mutex);
-	dm_pending.emplace(sender, std::deque<Message>());
-	std::vector<Message> messages;
+	dm_pending.emplace(sender, std::deque<ServerMessage>());
+	std::vector<ServerMessage> messages;
 
 	while (!dm_pending[sender].empty()) {
 		messages.push_back(dm_pending[sender].front());

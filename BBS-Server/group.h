@@ -1,7 +1,7 @@
 #pragma once
 
 #include "session.h"
-#include "message.h"
+#include "ServerCommands.h"
 
 #include <string>
 #include <mutex>
@@ -14,7 +14,7 @@ private:
 	std::string name;
 	std::map<std::string, std::shared_ptr<Session>> users;
 	std::mutex users_mutex;
-	std::deque<Message> history;
+	std::deque<ServerMessage> history;
 public:
 	Group(std::string name);
 	

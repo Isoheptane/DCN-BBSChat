@@ -36,6 +36,24 @@
     <ClInclude Include="SetColor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Buffer.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerCommands.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientAuthCommands.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientFileCommands.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientGroupDMCommands.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientMessageCommands.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -60,6 +78,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SetColor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerCommands.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientAuthCommands.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientFileCommands.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientGroupDMCommands.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientMessageCommands.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

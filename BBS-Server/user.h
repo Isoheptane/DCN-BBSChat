@@ -8,7 +8,7 @@
 #include <mutex>
 #include <tuple>
 
-#include "message.h"
+#include "ServerCommands.h"
 
 using std::string;
 
@@ -16,7 +16,7 @@ class User
 {
 private:
 	// Message to be sent
-	std::map<string, std::deque<Message>> dm_pending;
+	std::map<string, std::deque<ServerMessage>> dm_pending;
 	// DM Pending mutex
 	std::mutex dm_pending_mutex;
 public:
@@ -25,9 +25,9 @@ public:
 
 	User(string name, string password);
 
-	void push_direct_message(string sender, Message message);
+	void push_direct_message(string sender, ServerMessage message);
 
-	std::vector<Message> fetch_direct_message(string sender);
+	std::vector<ServerMessage> fetch_direct_message(string sender);
 
 	std::map<string, size_t> get_direct_message_counts();
 };

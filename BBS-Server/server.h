@@ -1,7 +1,7 @@
 #pragma once
 
 #include "user.h"
-#include "group.h
+#include "group.h"
 
 #include <map>
 

@@ -134,7 +134,9 @@
     <ClCompile Include="BBS-Server.cpp" />
     <ClCompile Include="group.cpp" />
     <ClCompile Include="listener.cpp" />
-    <ClCompile Include="message.cpp" />
+    <ClCompile Include="PacketGenerator.cpp" />
+    <ClCompile Include="server.cpp" />
+    <ClCompile Include="session.cpp" />
     <ClCompile Include="user.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,7 +147,9 @@
   <ItemGroup>
     <ClInclude Include="group.h" />
     <ClInclude Include="listener.h" />
-    <ClInclude Include="message.h" />
+    <ClInclude Include="PacketGenerator.h" />
+    <ClInclude Include="server.h" />
+    <ClInclude Include="session.h" />
     <ClInclude Include="user.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
