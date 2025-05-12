@@ -36,37 +36,19 @@ vector<uint8_t> ClientGroupDMCommands::toPacket() const {
 
     // Append command length and command string
     append_uint8(buffer, static_cast<uint8_t>(command.size()));
-    append_string(buffer, command);
+    append_vector(buffer, command);
 
     // For "create_group", "join_group", and "remove_group", include the group name
     if (command == "create_group" || command == "join_group" || command == "remove_group") {
         append_uint8(buffer, static_cast<uint8_t>(groupName.size()));
-        append_string(buffer, groupName);
+        append_vector(buffer, groupName);
     }
 
     // For "join_dm", include the username
     if (command == "join_dm") {
         append_uint8(buffer, static_cast<uint8_t>(username.size()));
-        append_string(buffer, username);
+        append_vector(buffer, username);
     }
 
     return buffer;
-}
-
-// Helper function to append a uint8 value to the buffer
-void ClientGroupDMCommands::append_uint8(std::vector<uint8_t>& buffer, uint8_t value) {
-    buffer.push_back(value);
-}
-
-// Helper function to append a uint16 value to the buffer
-void ClientGroupDMCommands::append_uint16(std::vector<uint8_t>& buffer, uint16_t value) {
-    buffer.push_back(static_cast<uint8_t>(value >> 8));
-    buffer.push_back(static_cast<uint8_t>(value & 0xFF));
-}
-
-// Helper function to append a string to the buffer
-void ClientGroupDMCommands::append_string(std::vector<uint8_t>& buffer, const std::string& str) {
-    for (char c : str) {
-        buffer.push_back(static_cast<uint8_t>(c));
-    }
 }

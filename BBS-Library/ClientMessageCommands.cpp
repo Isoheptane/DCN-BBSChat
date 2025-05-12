@@ -32,18 +32,3 @@ vector<uint8_t> ClientMessage::toPacket() const {
 
     return buffer;
 }
-
-void ClientMessage::append_uint8(vector<uint8_t>& buffer, uint8_t value) {
-    buffer.push_back(value);
-}
-
-void ClientMessage::append_uint16(vector<uint8_t>& buffer, uint16_t value) {
-    buffer.push_back(static_cast<uint8_t>(value >> 8));
-    buffer.push_back(static_cast<uint8_t>(value & 0xFF));
-}
-
-void ClientMessage::append_vector(vector<uint8_t>& buffer, const string& str) {
-    for (char c : str) {
-        buffer.push_back(static_cast<uint8_t>(c));
-    }
-}

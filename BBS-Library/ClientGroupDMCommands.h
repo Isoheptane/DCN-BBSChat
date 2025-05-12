@@ -23,11 +23,6 @@ private:
     std::string command;
     std::string groupName;
     std::string username;
-
-    // Helper functions for appending data to the packet
-    static void append_uint8(std::vector<uint8_t>& buffer, uint8_t value);
-    static void append_uint16(std::vector<uint8_t>& buffer, uint16_t value);
-    static void append_string(std::vector<uint8_t>& buffer, const std::string& str);
 };
 
 #endif // CLIENTGROUPDMCOMMANDS_H

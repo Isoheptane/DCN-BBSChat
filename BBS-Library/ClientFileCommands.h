@@ -27,11 +27,6 @@ private:
     std::string fileName;       // File name (relevant for all file commands)
     std::vector<uint8_t> fileData; // File data (relevant for file upload)
 
-    // Helper methods to append data to the buffer
-    static void append_uint8(std::vector<uint8_t>& buffer, uint8_t value);
-    static void append_uint16(std::vector<uint8_t>& buffer, uint16_t value);
-    static void append_string(std::vector<uint8_t>& buffer, const std::string& str);
-    static void append_vector(std::vector<uint8_t>& buffer, const std::vector<uint8_t>& data);
 };
 
 #endif // CLIENTFILECOMMANDS_H

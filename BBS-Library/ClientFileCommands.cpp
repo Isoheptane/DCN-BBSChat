@@ -40,22 +40,3 @@ vector<uint8_t> ClientFileCommand::toPacket() const {
 
     return buffer;
 }
-
-void ClientFileCommand::append_uint8(vector<uint8_t>& buffer, uint8_t value) {
-    buffer.push_back(value);
-}
-
-void ClientFileCommand::append_uint16(vector<uint8_t>& buffer, uint16_t value) {
-    buffer.push_back(static_cast<uint8_t>(value >> 8));
-    buffer.push_back(static_cast<uint8_t>(value & 0xFF));
-}
-
-void ClientFileCommand::append_string(vector<uint8_t>& buffer, const string& str) {
-    for (char c : str) {
-        buffer.push_back(static_cast<uint8_t>(c));
-    }
-}
-
-void ClientFileCommand::append_vector(vector<uint8_t>& buffer, const vector<uint8_t>& data) {
-    buffer.insert(buffer.end(), data.begin(), data.end());
-}
