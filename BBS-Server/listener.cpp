@@ -50,19 +50,32 @@ void connectionHandler(SocketW sockw) {
 
 	// Receive packets loop
 	while (conn.connected()) {
-		vector<uint8_t> packet;
-		int status = conn.receive_packet(packet);
-		if (status != SecConnStatus::SECONN_OK) {
-			printf("Failed to receive packet (Error %d)\n", status);
-			// Maybe close the connection
+		int available = conn.available(10000);
+		if (available < 0) {
+			printf("Failed to check availability of %s:%d (Error %d), disconnecting...\n", epAddr.c_str(), epPort, WSAGetLastError());
 			conn.disconnect();
 			break;
 		}
-		// Process received packet
-		
-		// Dummy Processor
-		packet.push_back('\0');
-		printf("Length %d:\n > %s\n", packet.size(), packet.data());
+		if (available > 0) {
+			vector<uint8_t> packet;
+			int status = conn.receive_packet(packet);
+			if (status != SecConnStatus::SECONN_OK) {
+				printf("Failed to receive packet (Error %d), disconnecting...\n", status);
+				// Maybe close the connection
+				conn.disconnect();
+				break;
+			}
+			// Process received packet
+			
+			// Dummy Processor
+			packet.push_back('\0');
+			printf("Length %d:\n > %s\n", packet.size(), packet.data());
+		}
+		else {
+			// Send data when there is no packet to be processed
+			printf("NOT AVAILABLE\n");
+		}
+		Sleep(10);
 	}
 
 	printf("Client %s:%d disconnected.\n", epAddr.c_str(), epPort);
