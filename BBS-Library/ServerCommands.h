@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <cstdint>
 
 struct ServerOverview
 {
