@@ -26,11 +26,11 @@ vector<uint8_t> ClientFileCommand::toPacket() const {
 
     // Command type
     append_uint8(buffer, static_cast<uint8_t>(commandType.size()));
-    append_string(buffer, commandType);
+    append_vector(buffer, commandType);
 
     // File name
     append_uint16(buffer, static_cast<uint16_t>(fileName.size()));
-    append_string(buffer, fileName);
+    append_vector(buffer, fileName);
 
     // If the command is for file upload, include file data
     if (commandType == "file_upload") {
