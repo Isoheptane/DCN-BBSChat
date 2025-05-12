@@ -1,7 +1,9 @@
 #include "listener.h"
+
 #include "SecConn.h"
 #include "ServerCommands.h"
 #include "session.h"
+#include "packet_processor.h"
 
 #include <cstdio>
 #include <cstdint>
@@ -76,10 +78,7 @@ void connectionHandler(SocketW sockw) {
 					break;
 				}
 				// Process received packet
-
-				// Dummy Processor
-				packet.push_back('\0');
-				printf("Length %d:\n > %s\n", packet.size(), packet.data());
+				packet_processor(session, packet);
 			}
 		}
 		else {

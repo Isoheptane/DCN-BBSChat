@@ -134,7 +134,7 @@
     <ClCompile Include="BBS-Server.cpp" />
     <ClCompile Include="group.cpp" />
     <ClCompile Include="listener.cpp" />
-    <ClCompile Include="PacketGenerator.cpp" />
+    <ClCompile Include="packet_processor.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="session.cpp" />
     <ClCompile Include="user.cpp" />
@@ -147,7 +147,7 @@
   <ItemGroup>
     <ClInclude Include="group.h" />
     <ClInclude Include="listener.h" />
-    <ClInclude Include="PacketGenerator.h" />
+    <ClInclude Include="packet_processor.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="session.h" />
     <ClInclude Include="user.h" />

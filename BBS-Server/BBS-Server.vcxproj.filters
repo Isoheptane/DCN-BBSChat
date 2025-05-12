@@ -33,7 +33,7 @@
     <ClCompile Include="session.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PacketGenerator.cpp">
+    <ClCompile Include="packet_processor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClInclude Include="session.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PacketGenerator.h">
+    <ClInclude Include="packet_processor.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
