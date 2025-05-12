@@ -1,24 +1,24 @@
 #include "pch.h"
 #include "ClientAuthCommands.h"
-#include "Buffer.hpp"
 #include "Crypto.h"
+#include <stdexcept>
 
-// Use Crypto::SHA256 for password hashing
 using Crypto::SHA256::SHA256;
 using std::string;
 using std::vector;
 
-// Generate a login command packet according to protocol
-std::vector<uint8_t> make_login_packet(const std::string& username, const std::string& password) {
-    std::vector<uint8_t> packet;
-    // 1. Command: "login"
+// Serialize LoginCommand to protocol-compliant packet
+vector<uint8_t> LoginCommand::toPacket() const {
+    if (username.size() > 255) throw std::length_error("Username too long (max 255 bytes)");
+    vector<uint8_t> packet;
+    // Command: "login"
     const string command = "login";
-    packet.push_back(static_cast<uint8_t>(command.size())); // Command Length
-    packet.insert(packet.end(), command.begin(), command.end()); // Command
-    // 2. Username
-    packet.push_back(static_cast<uint8_t>(username.size())); // Username Length
-    packet.insert(packet.end(), username.begin(), username.end()); // Username
-    // 3. Password (SHA-256 hash, 32 bytes)
+    packet.push_back(static_cast<uint8_t>(command.size()));
+    packet.insert(packet.end(), command.begin(), command.end());
+    // Username
+    packet.push_back(static_cast<uint8_t>(username.size()));
+    packet.insert(packet.end(), username.begin(), username.end());
+    // Password (SHA-256 hash, 32 bytes)
     SHA256 sha;
     sha.update(password);
     auto digest = sha.digest();
@@ -26,17 +26,18 @@ std::vector<uint8_t> make_login_packet(const std::string& username, const std::s
     return packet;
 }
 
-// Generate a register command packet according to protocol
-std::vector<uint8_t> make_register_packet(const std::string& username, const std::string& password) {
-    std::vector<uint8_t> packet;
-    // 1. Command: "register"
+// Serialize RegisterCommand to protocol-compliant packet
+vector<uint8_t> RegisterCommand::toPacket() const {
+    if (username.size() > 255) throw std::length_error("Username too long (max 255 bytes)");
+    vector<uint8_t> packet;
+    // Command: "register"
     const string command = "register";
-    packet.push_back(static_cast<uint8_t>(command.size())); // Command Length
-    packet.insert(packet.end(), command.begin(), command.end()); // Command
-    // 2. Username
-    packet.push_back(static_cast<uint8_t>(username.size())); // Username Length
-    packet.insert(packet.end(), username.begin(), username.end()); // Username
-    // 3. Password (SHA-256 hash, 32 bytes)
+    packet.push_back(static_cast<uint8_t>(command.size()));
+    packet.insert(packet.end(), command.begin(), command.end());
+    // Username
+    packet.push_back(static_cast<uint8_t>(username.size()));
+    packet.insert(packet.end(), username.begin(), username.end());
+    // Password (SHA-256 hash, 32 bytes)
     SHA256 sha;
     sha.update(password);
     auto digest = sha.digest();
