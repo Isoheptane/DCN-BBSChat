@@ -1,17 +1,18 @@
 #include "pch.h"
-#include "Commands.h"
+#include "ServerMessages.h"
 #include "Buffer.hpp"
 
 using std::string;
 using std::vector;
-
 
 std::string getPacketCommand(const std::vector<uint8_t>& packet) {
 	size_t length = take_uint8(packet, 0);
 	return take_string(packet, 1, length);
 }
 
-// Server Overview
+/*
+*	Server Overview
+*/
 ServerOverview ServerOverview::fromPacket(std::vector<uint8_t> packet) {
 
 	ServerOverview overview;
@@ -48,6 +49,7 @@ ServerOverview ServerOverview::fromPacket(std::vector<uint8_t> packet) {
 
 std::vector<uint8_t> ServerOverview::toPacket() {
 	std::vector<uint8_t> buffer;
+
 	const static std::string COMMAND = std::string("message");
 	append_uint8(buffer, COMMAND.size());
 	append_vector(buffer, COMMAND);
@@ -71,7 +73,47 @@ std::vector<uint8_t> ServerOverview::toPacket() {
 	return buffer;
 }
 
-// Server Message
+/*
+*	User List
+*/
+UserList UserList::fromPacket(std::vector<uint8_t> packet) {
+	UserList list;
+
+	size_t counter = 0;
+	size_t cml = take_uint8(packet, counter++);
+	counter += cml;
+
+	size_t count = take_uint8(packet, counter++);
+
+	for (size_t i = 0; i < count; i++) {
+		size_t len = take_uint8(packet, counter++);
+		string name = take_string(packet, counter, len);
+		counter += len;
+
+		list.usernames.insert(name);
+	}
+
+	return list;
+}
+
+std::vector<uint8_t> UserList::toPacket() {
+	std::vector<uint8_t> buffer;
+
+	const static std::string COMMAND = std::string("user_list");
+	append_uint8(buffer, COMMAND.size());
+	append_vector(buffer, COMMAND);
+
+	for (auto name : this->usernames) {
+		append_uint8(buffer, name.size());
+		append_vector(buffer, name);
+	}
+
+	return buffer;
+}
+
+/*
+*	Server Message
+*/
 ServerMessage::ServerMessage(string type, string sender, string content)
 	: type(type), sender(sender), content(content) {
 }
@@ -126,6 +168,7 @@ ServerMessage ServerMessage::fromPacket(vector<uint8_t> packet) {
 
 vector<uint8_t> ServerMessage::toPacket() {
 	std::vector<uint8_t> buffer;
+
 	const static std::string COMMAND = std::string("message");
 	append_uint8(buffer, COMMAND.size());
 	append_vector(buffer, COMMAND);

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <map>
 
 std::string getPacketCommand(const std::vector<uint8_t>& packet);
@@ -15,13 +16,19 @@ struct ServerOverview
 	std::map<std::string, size_t> dms;
 
 	static ServerOverview fromPacket(std::vector<uint8_t> packet);
+	std::vector<uint8_t> toPacket();
+};
 
+struct UserList
+{
+	std::set<std::string> usernames;
+
+	static UserList fromPacket(std::vector<uint8_t> packet);
 	std::vector<uint8_t> toPacket();
 };
 
 struct ServerMessage
 {
-public:
 	std::string type;
 	std::string sender;
 	std::string content;
