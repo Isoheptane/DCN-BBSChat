@@ -106,10 +106,12 @@ void overview_handler(const std::vector<uint8_t>& packet) {
 	printf("\nThere are %zd users have messaged you:\n", overview.dms.size());
 	for (auto it : overview.dms) {
 		string name = it.first;
-		setColor(genColor(name));
-		printf("    - %s ", name.c_str());
 		setColor(Color::WHITE);
-		printf("(%zd)\n", it.second);
+		printf("    - ");
+		setColor(genColor(name));
+		printf("%s", name.c_str());
+		setColor(Color::WHITE);
+		printf(" (%zd)\n", it.second);
 	}
 
 	printf("\n");

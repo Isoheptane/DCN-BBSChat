@@ -254,6 +254,18 @@ void message_handler(HANDLER_ARGS) {
 
 		g.get()->broadcast_chat(session.get()->user, message);
 	}
+	if (session.get()->state == SessionState::STATE_DM) {
+		if (!global_server.exist_user(session.get()->associated_data)) {
+			session.get()->packet_push(ServerMessage::serverMessage("You doesn't seem to be in a valid DM. Try /lobby to get back to lobby.").toPacket());
+			return;
+		}
+		auto u = global_server.get_user(session.get()->associated_data);
+		
+		ServerMessage sm = ServerMessage(message.type, session.get()->user, message.content);
+		u.get()->push_direct_message(session.get()->user, sm);
+		// Sendback to sender for display
+		session.get()->packet_push(sm.toPacket());
+	}
 }
 
 void file_download_handler(HANDLER_ARGS) {
