@@ -8,6 +8,8 @@
 #include <deque>
 #include <thread>
 #include <sstream>
+#include <fstream>
+#include <ctime>
 
 #include "Crypto.h"
 #include "SocketW.h"
@@ -21,6 +23,10 @@
 #include "ClientAuthCommands.h"
 #include "ClientMessageCommands.h"
 #include "ClientGroupDMCommands.h"
+#include "ClientFileCommands.h"
+
+#include <Shlwapi.h>
+#pragma comment(lib, "Shlwapi.lib")
 
 using std::cout;
 using std::cin;
@@ -38,10 +44,10 @@ int main()
 
 	// Prompt welcome and require input data
 	printf("Welcome to DCN Chat Client.\n");
-	printf("Server address and port: ");
+	printf("Server address and port:\n");
 	cin >> server_addr >> server_port;
 
-	printf("Pleasge input [login/reg], your username and password:\n  ");
+	printf("Pleasge input [login/reg], your username and password:\n");
 
 	string loginType, username, password;
 	cin >> loginType >> username >> password;
@@ -113,12 +119,18 @@ int main()
 
 			if (command == "/lobby") {
 				packet = makeBodylessPacket("lobby");
+				queue.get()->push(packet);
+				continue;
 			} 
 			else if (command == "/overview") {
 				packet = makeBodylessPacket("overview");
+				queue.get()->push(packet);
+				continue;
 			}
 			else if (command == "/list") {
 				packet = makeBodylessPacket("list");
+				queue.get()->push(packet);
+				continue;
 			}
 			else if (command == "/create_group") {
 				if (arg == "INVALID_STRING") {
@@ -126,6 +138,8 @@ int main()
 					continue;
 				}
 				packet = ClientGroupDMCommands::createGroupCommand(arg).toPacket();
+				queue.get()->push(packet);
+				continue;
 			}
 			else if (command == "/join_group") {
 				if (arg == "INVALID_STRING") {
@@ -133,6 +147,8 @@ int main()
 					continue;
 				}
 				packet = ClientGroupDMCommands::joinGroupCommand(arg).toPacket();
+				queue.get()->push(packet);
+				continue;
 			}
 			else if (command == "/remove_group") {
 				if (arg == "INVALID_STRING") {
@@ -140,6 +156,8 @@ int main()
 					continue;
 				}
 				packet = ClientGroupDMCommands::removeGroupCommand(arg).toPacket();
+				queue.get()->push(packet);
+				continue;
 			}
 			else if (command == "/join_dm") {
 				if (arg == "INVALID_STRING") {
@@ -147,9 +165,82 @@ int main()
 					continue;
 				}
 				packet = ClientGroupDMCommands::joinDMCommand(arg).toPacket();
+				queue.get()->push(packet);
+				continue;
 			}
-			queue.get()->push(packet);
-			continue;
+			else if (command == "/file_delete") {
+				if (arg == "INVALID_STRING") {
+					printf("Please specify remote server file name.\n");
+					continue;
+				}
+				packet = ClientFileCommand::fileDeleteCommand(arg).toPacket();
+				queue.get()->push(packet);
+				continue;
+			}
+			else if (command == "/file_upload") {
+				if (arg == "INVALID_STRING") {
+					printf("Please specify local file name.\n");
+					continue;
+				}
+
+				std::ifstream readfs = std::ifstream(arg, std::ifstream::binary);
+				if (readfs.fail()) {
+					printf("File does not exist or failed to open file.\n");
+					continue;
+				}
+				// Generate a new file name for upload
+				string filename = string(PathFindFileName(arg.c_str()));
+
+				char buffer[32768];
+				time_t ts = time(NULL);
+				sprintf_s(buffer, sizeof(buffer), "%zx_%s", ts, filename.c_str());
+				string upload_name = string(buffer);
+
+				printf("Upload file name is %s. Initiating file upload...\n", upload_name.c_str());
+
+				size_t prev_sent_size = 0;
+				size_t sent_size = 0;
+
+				while (true) {
+					// printf(".");
+					readfs.read(buffer, sizeof(buffer));
+					size_t block_size = readfs.gcount();
+
+					sent_size += block_size;
+					if (sent_size >= prev_sent_size + (1024 * 1024)) {
+						prev_sent_size = sent_size;
+						printf(" > %d MiB Transmitted \n", prev_sent_size / (1024 * 1024));
+					}
+
+					ClientFileCommand command = ClientFileCommand::fileUploadCommand(upload_name, std::vector<uint8_t>());
+
+					for (size_t i = 0; i < block_size; i++)
+						command.fileData.push_back(buffer[i]);
+
+					queue.get()->push(command.toPacket());
+
+					if (block_size < sizeof(buffer)) {
+						break;
+					}
+				}
+
+				queue.get()->push(ClientMessage::fileHintMessage(upload_name).toPacket());
+
+				printf("Waiting for server response...\n");
+
+				continue;
+			}
+			else if (command == "/file_download") {
+				// This method is asynchronos, receiver will download
+				if (arg == "INVALID_STRING") {
+					printf("Please specify remote server file name.\n");
+					continue;
+				}
+				packet = ClientFileCommand::fileDownloadCommand(arg).toPacket();
+				queue.get()->push(packet);
+
+				continue;
+			}
 		}
 		// Normal message
 		queue.get()->push(ClientMessage::textMessage(input).toPacket());

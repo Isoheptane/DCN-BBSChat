@@ -1,5 +1,7 @@
 #include "conn_operator.h"
 
+#include "file_pool.h"
+
 #include <cstdio>
 #include <cstdint>
 #include <iostream>
@@ -45,7 +47,7 @@ void connection_operator(SecConn conn, std::shared_ptr<PacketQueue> queue) {
 			}
 		}
 		else {
-			// Write operations
+			// Write operations every 10ms
 			while (queue.get()->available()) {
 				vector<uint8_t> packet = queue.get()->take();
 				int status = conn.send_packet(packet);
@@ -56,6 +58,8 @@ void connection_operator(SecConn conn, std::shared_ptr<PacketQueue> queue) {
 					break;
 				}
 			}
+			// Other tasks
+			file_pool.closeAllTimedout(10);
 		}
 	}
 }

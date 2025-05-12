@@ -1,5 +1,7 @@
 #include "server.h"
 
+#include "windows.h"
+
 using std::string;
 using std::vector;
 
@@ -113,4 +115,13 @@ void Server::remove_from_group(std::shared_ptr<Session> session) {
 	g.get()->remove_user(session);
 	g.get()->broadcast(ServerMessage::leaveMessage(session.get()->user));
 
+}
+
+bool Server::append_to_file(std::string name, const std::vector<uint8_t> bytes) {
+	const static string prefix = "./upload/";
+	if (CreateDirectory(prefix.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError()) {
+		string actual_name = prefix + name;
+		return this->file_pool.appendBytes(actual_name, bytes);
+	}
+	return false;
 }

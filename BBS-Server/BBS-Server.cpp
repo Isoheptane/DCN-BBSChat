@@ -6,6 +6,7 @@
 #include "SocketW.h"
 
 #include "listener.h"
+#include "server.h"
 
 using std::cout;
 using std::cin;
@@ -53,6 +54,7 @@ int main(int argc, char** argv)
 	listenerThread.detach();
 
 	while (true) {
-		;
+		// Other tasks
+		global_server.file_pool.closeAllTimedout(10);
 	}
 }

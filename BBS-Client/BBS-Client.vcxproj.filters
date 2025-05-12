@@ -27,6 +27,9 @@
     <ClCompile Include="packet_processor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="file_pool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="packet_queue.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="packet_processor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="file_pool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

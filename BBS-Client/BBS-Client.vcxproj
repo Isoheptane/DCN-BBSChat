@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="BBS-Client.cpp" />
     <ClCompile Include="conn_operator.cpp" />
+    <ClCompile Include="file_pool.cpp" />
     <ClCompile Include="packet_processor.cpp" />
     <ClCompile Include="packet_queue.cpp" />
   </ItemGroup>
@@ -143,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="conn_operator.h" />
+    <ClInclude Include="file_pool.h" />
     <ClInclude Include="packet_processor.h" />
     <ClInclude Include="packet_queue.h" />
   </ItemGroup>

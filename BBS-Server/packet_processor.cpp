@@ -4,6 +4,7 @@
 #include "ClientAuthCommands.h"
 #include "ClientGroupDMCommands.h"
 #include "ClientMessageCommands.h"
+#include "ClientFileCommands.h"
 #include "server.h"
 
 #include <string>
@@ -64,6 +65,18 @@ void packet_processor(std::shared_ptr<Session> session, const std::vector<uint8_
 	printf("[%s:%d] Unknown message type %s, ignored.\n", session.get()->epAddr.c_str(), session.get()->epPort, command.c_str());
 }
 
+const static string motd = R"foo(
+$$$$$$$\   $$$$$$\  $$\   $$\          $$$$$$\  $$\   $$\  $$$$$$\ $$$$$$$$\ 
+$$  __$$\ $$  __$$\ $$$\  $$ |        $$  __$$\ $$ |  $$ |$$  __$$\\__$$  __|
+$$ |  $$ |$$ /  \__|$$$$\ $$ |        $$ /  \__|$$ |  $$ |$$ /  $$ |  $$ |   
+$$ |  $$ |$$ |      $$ $$\$$ |$$$$$$\ $$ |      $$$$$$$$ |$$$$$$$$ |  $$ |   
+$$ |  $$ |$$ |      $$ \$$$$ |\______|$$ |      $$  __$$ |$$  __$$ |  $$ |   
+$$ |  $$ |$$ |  $$\ $$ |\$$$ |        $$ |  $$\ $$ |  $$ |$$ |  $$ |  $$ |   
+$$$$$$$  |\$$$$$$  |$$ | \$$ |        \$$$$$$  |$$ |  $$ |$$ |  $$ |  $$ |   
+\_______/  \______/ \__|  \__|         \______/ \__|  \__|\__|  \__|  \__|   
+)foo";
+
+
 void login_handler(HANDLER_ARGS) {
 	LoginCommand command = LoginCommand::fromPacket(packet);
 	if (!global_server.verify_user(command.username, command.password)) {
@@ -73,6 +86,7 @@ void login_handler(HANDLER_ARGS) {
 			command.username.c_str()
 		);
 		session.get()->packet_push(ServerMessage::serverMessage("Authentication failed.").toPacket());
+		session.get()->packet_push(makeBodylessPacket("disconnect"));
 		session.get()->state = SessionState::STATE_CLOSED;
 		return;
 	}
@@ -85,6 +99,7 @@ void login_handler(HANDLER_ARGS) {
 	session.get()->user = command.username;
 	session.get()->state = STATE_LOBBY;
 	// Send a overview
+	session.get()->packet_push(ServerMessage::welcomeMessage(motd).toPacket());
 	session.get()->packet_push(ServerMessage::serverMessage("Welcome back!").toPacket());
 	session.get()->packet_push(global_server.get_overview(session.get()->user).toPacket());
 }
@@ -99,6 +114,7 @@ void register_handler(HANDLER_ARGS) {
 			command.username.c_str()
 		);
 		session.get()->packet_push(ServerMessage::serverMessage("User already registered.").toPacket());
+		session.get()->packet_push(makeBodylessPacket("disconnect"));
 		session.get()->state = SessionState::STATE_CLOSED;
 		return;
 	}
@@ -113,6 +129,7 @@ void register_handler(HANDLER_ARGS) {
 	global_server.add_session(session);
 	session.get()->state = STATE_LOBBY;
 	// Send a overview
+	session.get()->packet_push(ServerMessage::welcomeMessage(motd).toPacket());
 	session.get()->packet_push(ServerMessage::serverMessage("You have successully registered.").toPacket());
 	session.get()->packet_push(global_server.get_overview(session.get()->user).toPacket());
 }
@@ -271,15 +288,76 @@ void message_handler(HANDLER_ARGS) {
 }
 
 void file_download_handler(HANDLER_ARGS) {
+	ClientFileCommand command = ClientFileCommand::fromPacket(packet);
 
+	string path = "./upload/" + command.fileName;
+	std::ifstream readfs = std::ifstream(path, std::ifstream::binary);
+	if (readfs.fail()) {
+		session.get()->packet_push(ServerMessage::serverMessage("File does not exist or failed to open file.").toPacket());
+		return;
+	}
+
+	size_t prev_sent_size = 0;
+	size_t sent_size = 0;
+
+	char buffer[32768];
+	while (true) {
+		// printf(".");
+		readfs.read(buffer, sizeof(buffer));
+		size_t block_size = readfs.gcount();
+
+		sent_size += block_size;
+		if (sent_size >= prev_sent_size + (1024 * 1024)) {
+			prev_sent_size = sent_size;
+			
+			char format_str[256];
+			sprintf_s(format_str, sizeof(format_str), "%zd MiB Transmitted", prev_sent_size / (1024 * 1024));
+			string hint = string(format_str);
+			session.get()->packet_push(ServerMessage::serverMessage(hint).toPacket());
+		}
+
+		ServerFileSend resp;
+		resp.filename = command.fileName;
+
+		for (size_t i = 0; i < block_size; i++)
+			resp.block.push_back(buffer[i]);
+
+		session.get()->packet_push(resp.toPacket());
+
+		if (block_size < sizeof(buffer)) {
+			break;
+		}
+	}
+
+	session.get()->packet_push(ServerMessage::serverMessage("File transmission complete.").toPacket());
 }
 
 void file_delete_handler(HANDLER_ARGS) {
+	ClientFileCommand command = ClientFileCommand::fromPacket(packet);
 
+	string path = "./upload/" + command.fileName;
+	std::ifstream fs = std::ifstream(path);
+	if (!fs.is_open()) {
+		session.get()->packet_push(ServerMessage::serverMessage("File does not exist.").toPacket());
+		return;
+	}
+	fs.close();
+	if (remove(path.c_str()) == 0) {
+		session.get()->packet_push(ServerMessage::serverMessage("File deleted.").toPacket());
+		return;
+	}
+	else {
+		session.get()->packet_push(ServerMessage::serverMessage("Failed to delete file.").toPacket());
+		return;
+	}
 }
 
 void file_upload_handler(HANDLER_ARGS) {
-
+	ClientFileCommand command = ClientFileCommand::fromPacket(packet);
+	if (!global_server.append_to_file(command.fileName, command.fileData)) {
+		session.get()->packet_push(ServerMessage::serverMessage("File append operation failed.").toPacket());
+		return;
+	}
 }
 
 void logout_handler(HANDLER_ARGS) {

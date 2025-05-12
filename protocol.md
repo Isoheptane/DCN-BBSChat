@@ -194,3 +194,7 @@ Send file content to the client. A server should send until file is fully sent.
 | File Name | string | Vary |
 | Appended Block Length | uint16 | 2 Byte |
 | File Name | uint8[] | Vary |
+
+### Miscellaneous
+#### Command `disconnect`
+Close the connection by server.

@@ -29,7 +29,7 @@ vector<uint8_t> ClientFileCommand::toPacket() {
     append_vector(buffer, commandType);
 
     // File name
-    append_uint16(buffer, static_cast<uint16_t>(fileName.size()));
+    append_uint8(buffer, static_cast<uint16_t>(fileName.size()));
     append_vector(buffer, fileName);
 
     // If the command is for file upload, include file data
@@ -61,7 +61,6 @@ ClientFileCommand ClientFileCommand::fromPacket(std::vector<uint8_t> packet) {
         content = take_bytes(packet, counter, contentLen);
         if (contentLen != content.size()) {
             printf("[ERROR] File upload packet receive error: Length not match\n");
-
         }
     }
 
