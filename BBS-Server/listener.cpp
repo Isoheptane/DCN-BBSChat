@@ -97,13 +97,12 @@ void connectionHandler(SocketW sockw) {
 					break;
 				}
 			}
+			// Check dm for additional
+			check_dm(session);
 		}
 	}
 
-	// Remove grom group if connection is closed
-	global_server.remove_from_group(session);
-
-	global_server.remove_session(session.get()->session_id);
+	global_server.remove_session(session);
 
 	printf("[%s:%d] Client disconnected.\n", epAddr.c_str(), epPort);
 }

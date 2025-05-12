@@ -44,7 +44,7 @@ public:
 
 	// Sessions
 	void add_session(std::shared_ptr<Session> session);
-	void remove_session(std::string session_id);
+	void remove_session(std::shared_ptr<Session> session);
 
 	ServerOverview get_overview(std::string user);
 	UserList get_userlist();

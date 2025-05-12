@@ -138,7 +138,7 @@ void lobby_handler(HANDLER_ARGS) {
 
 	global_server.remove_from_group(session);
 
-	session.get()->state == STATE_LOBBY;
+	session.get()->state = STATE_LOBBY;
 
 	session.get()->packet_push(ServerMessage::serverMessage("You have come back to the lobby.").toPacket());
 	session.get()->packet_push(global_server.get_overview(session.get()->user).toPacket());
@@ -361,9 +361,23 @@ void file_upload_handler(HANDLER_ARGS) {
 }
 
 void logout_handler(HANDLER_ARGS) {
-
+	
 }
 
 void heartbeat_handler(HANDLER_ARGS) {
 
+}
+
+void check_dm(std::shared_ptr<Session> session) {
+	if (session->state != STATE_DM) {
+		return;
+	}
+	if (!global_server.exist_user(session.get()->user)) {
+		return;
+	}
+	auto u = global_server.get_user(session.get()->user);
+	auto messages = u.get()->fetch_direct_message(session.get()->associated_data);
+	for (ServerMessage message : messages) {
+		session.get()->packet_push(message.toPacket());
+	}
 }

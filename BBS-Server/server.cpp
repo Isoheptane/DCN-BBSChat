@@ -89,9 +89,27 @@ void Server::add_session(std::shared_ptr<Session> session) {
 	this->sessions[session.get()->session_id] = session;
 }
 
-void Server::remove_session(std::string session_id) {
-	std::lock_guard<std::recursive_mutex> guard(this->sessions_mutex);
-	this->sessions.erase(session_id);
+void Server::remove_session(std::shared_ptr<Session> session) {
+	if (!session.get()->state == STATE_GROUP) {
+		string group = session.get()->associated_data;
+
+		if (!this->exist_group(group)) {
+			auto g = this->get_group(group);
+			g.get()->remove_user(session);
+			g.get()->broadcast(ServerMessage::leaveMessage(session.get()->user));
+		}
+	}
+	if (!session.get()->state == STATE_DM) {
+		string user = session.get()->associated_data;
+		if (!this->exist_group(user)) {
+			auto u = this->get_user(user);
+			u.get()->push_direct_message(session.get()->user, ServerMessage::leaveMessage(session.get()->user));
+		}
+	}
+	{
+		std::lock_guard<std::recursive_mutex> guard(this->sessions_mutex);
+		this->sessions.erase(session.get()->session_id);
+	}
 }
 
 UserList Server::get_userlist() {
@@ -104,7 +122,7 @@ UserList Server::get_userlist() {
 }
 
 void Server::remove_from_group(std::shared_ptr<Session> session) {
-	if (!session.get()->state == STATE_GROUP) {
+	if (session.get()->state != STATE_GROUP) {
 		return;
 	}
 	string group = session.get()->associated_data;
@@ -114,7 +132,6 @@ void Server::remove_from_group(std::shared_ptr<Session> session) {
 	auto g = this->get_group(group);
 	g.get()->remove_user(session);
 	g.get()->broadcast(ServerMessage::leaveMessage(session.get()->user));
-
 }
 
 bool Server::append_to_file(std::string name, const std::vector<uint8_t> bytes) {
