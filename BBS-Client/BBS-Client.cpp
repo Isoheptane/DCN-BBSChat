@@ -37,6 +37,8 @@ using std::vector;
 using WinSock::SocketW;
 using WinSock::SocketWStatus;
 
+void list_help();
+
 int main()
 {
 	string server_addr;
@@ -116,7 +118,10 @@ int main()
 
 			// packet to be sent
 			vector<uint8_t> packet;
-
+			if (command == "/help") {
+				list_help();
+				continue;
+			}
 			if (command == "/lobby") {
 				packet = makeBodylessPacket("lobby");
 				queue.get()->push(packet);
@@ -209,7 +214,7 @@ int main()
 					sent_size += block_size;
 					if (sent_size >= prev_sent_size + (1024 * 1024)) {
 						prev_sent_size = sent_size;
-						printf(" > %d MiB Transmitted \n", prev_sent_size / (1024 * 1024));
+						printf(" > %zd MiB Transmitted \n", prev_sent_size / (1024 * 1024));
 					}
 
 					ClientFileCommand command = ClientFileCommand::fileUploadCommand(upload_name, std::vector<uint8_t>());
@@ -247,4 +252,61 @@ int main()
 	}
 
     return 0;
+}
+
+void list_help() {
+
+	using SetColor::setColor;
+	using SetColor::Color;
+
+
+	setColor(Color::YELLOW);
+	printf("  /overview");
+	setColor(Color::WHITE);
+	printf(" : Refresh overview.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /list");
+	setColor(Color::WHITE);
+	printf(" : List online users in group or server.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /join_group");
+	setColor(Color::WHITE);
+	printf(" <GroupName> : Join a existing group.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /create_group");
+	setColor(Color::WHITE);
+	printf(" <GroupName> : Create a group.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /remove_group");
+	setColor(Color::WHITE);
+	printf(" <GroupName> : Remove an empty group group.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /join_dm");
+	setColor(Color::WHITE);
+	printf(" <Username> : Join direct message to aonther user.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /file_upload");
+	setColor(Color::WHITE);
+	printf(" <FileName> : Upload a local file to the server.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /file_download");
+	setColor(Color::WHITE);
+	printf(" <FileName> : Download a remote file from the server.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /file_delete");
+	setColor(Color::WHITE);
+	printf(" <FileName> : Delete a remote file from the server.\n");
+
+	setColor(Color::YELLOW);
+	printf("  /help");
+	setColor(Color::WHITE);
+	printf(" : List all commands\n");
 }

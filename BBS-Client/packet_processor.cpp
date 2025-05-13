@@ -39,7 +39,16 @@ void packet_processor(const std::vector<uint8_t>& packet) {
 
 void server_message_handler(const std::vector<uint8_t>& packet) {
 	ServerMessage message = ServerMessage::fromPacket(packet);
+	time_t ts = message.timestamp;
+	tm detail;
+	localtime_s(&detail, &ts);
+
+	char timestr[64];
+	sprintf_s(timestr, sizeof(timestr), "%02d:%02d:%02d", detail.tm_hour, detail.tm_min, detail.tm_sec);
+
 	if (message.type == "text") {
+		setColor(Color::WHITE);
+		printf("[%s]", timestr);
 		setColor(genColor(message.sender));
 		printf(" %s", message.sender.c_str());
 		setColor(Color::WHITE);
@@ -47,7 +56,7 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 	}
 	if (message.type == "file_hint") {
 		setColor(Color::WHITE);
-		printf(" * ");
+		printf("[%s] * ", timestr);
 		setColor(genColor(message.sender));
 		printf("%s", message.sender.c_str());
 		setColor(Color::WHITE);
@@ -55,7 +64,7 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 	}
 	if (message.type == "join") {
 		setColor(Color::WHITE);
-		printf(" * ");
+		printf("[%s] * ", timestr);
 		setColor(genColor(message.sender));
 		printf("%s", message.sender.c_str());
 		setColor(Color::WHITE);
@@ -63,7 +72,7 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 	}
 	if (message.type == "leave") {
 		setColor(Color::WHITE);
-		printf(" * ");
+		printf("[%s] * ", timestr);
 		setColor(genColor(message.sender));
 		printf("%s", message.sender.c_str());
 		setColor(Color::WHITE);
@@ -75,6 +84,8 @@ void server_message_handler(const std::vector<uint8_t>& packet) {
 		setColor(Color::WHITE);
 	}
 	if (message.type == "server") {
+		// setColor(Color::WHITE);
+		// printf("%s", timestr);
 		setColor(Color::RED);
 		printf(" Server");
 		setColor(Color::WHITE);
